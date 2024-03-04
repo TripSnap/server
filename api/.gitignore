@@ -38,3 +38,6 @@ out/
 
 *.sql
 application-local.properties
+
+### querydsl ###
+generated/
