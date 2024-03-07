@@ -40,12 +40,12 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     @Nullable
     protected String obtainPassword(HttpServletRequest request) {
-        return request.getParameter(FORM_USERNAME_ATTR_NAME);
+        return request.getParameter(FORM_PASSWORD_ATTR_NAME);
     }
 
     @Nullable
     protected String obtainUsername(HttpServletRequest request) {
-        return request.getParameter(FORM_PASSWORD_ATTR_NAME);
+        return request.getParameter(FORM_USERNAME_ATTR_NAME);
     }
 
 }
