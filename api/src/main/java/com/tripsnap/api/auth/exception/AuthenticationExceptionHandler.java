@@ -1,4 +1,4 @@
-package com.tripsnap.api.auth;
+package com.tripsnap.api.auth.exception;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,12 @@ import java.io.IOException;
 public class AuthenticationExceptionHandler implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+        if(authException instanceof AccessTokenExpiredException) {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Refresh-Token");
+        } else {
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.addHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer");
+        }
     }
 }

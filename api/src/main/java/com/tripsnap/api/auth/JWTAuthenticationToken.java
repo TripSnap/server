@@ -1,5 +1,6 @@
 package com.tripsnap.api.auth;
 
+import com.tripsnap.api.auth.vo.TokenData;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
