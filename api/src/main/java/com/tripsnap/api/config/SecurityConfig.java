@@ -2,10 +2,12 @@ package com.tripsnap.api.config;
 
 
 import com.tripsnap.api.auth.JWTFilter;
-import com.tripsnap.api.auth.LoginFilter;
-import com.tripsnap.api.auth.LoginSuccessHandler;
-import com.tripsnap.api.auth.LoginUserDetailsService;
 import com.tripsnap.api.auth.exception.AuthenticationExceptionHandler;
+import com.tripsnap.api.auth.login.LoginFilter;
+import com.tripsnap.api.auth.login.LoginSuccessHandler;
+import com.tripsnap.api.auth.login.LoginUserDetailsService;
+import com.tripsnap.api.auth.logout.JWTLogoutHandler;
+import com.tripsnap.api.auth.logout.JWTLogoutSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 import static jakarta.servlet.DispatcherType.ERROR;
 
@@ -42,7 +45,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(header -> header.frameOptions(options -> options.sameOrigin()))
                 .addFilterBefore(jwtFilter(), AuthorizationFilter.class)
-                .addFilterAfter(loginFilter( providerManager()), AuthorizationFilter.class)
+                .addFilterBefore(loginFilter( providerManager()), AuthorizationFilter.class)
+                .addFilterBefore(logoutFilter(),  AuthorizationFilter.class)
+                .logout((logout) ->logout.disable())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -60,6 +65,7 @@ public class SecurityConfig {
     AuthenticationManager providerManager() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder());
         LoginUserDetailsService userDetailsService = context.getBean(LoginUserDetailsService.class);
+        provider.setForcePrincipalAsString(true);
         provider.setUserDetailsService(userDetailsService);
         return new ProviderManager(provider);
     }
@@ -75,6 +81,13 @@ public class SecurityConfig {
     @Bean
     LoginSuccessHandler loginSuccessHandler() {
         return new LoginSuccessHandler();
+    }
+
+    @Bean
+    LogoutFilter logoutFilter() {
+        JWTLogoutHandler logoutHandler = context.getBean(JWTLogoutHandler.class);
+        LogoutFilter logoutFilter = new LogoutFilter(new JWTLogoutSuccessHandler(), logoutHandler);
+        return logoutFilter;
     }
 
     @Bean

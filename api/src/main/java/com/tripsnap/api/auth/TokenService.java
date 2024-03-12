@@ -4,10 +4,7 @@ import com.tripsnap.api.auth.redis.RefreshToken;
 import com.tripsnap.api.auth.redis.RefreshTokenRepository;
 import com.tripsnap.api.auth.vo.DecryptedToken;
 import com.tripsnap.api.utils.TimeUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwe;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.AeadAlgorithm;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -59,23 +56,28 @@ public class TokenService {
         try {
             Jwe<Claims> claimsJwe = Jwts.parser().decryptWith(key).build().parseEncryptedClaims(jwe);
             Claims payload = claimsJwe.getPayload();
-            boolean isExpired = payload.getIssuedAt().before(new Date());
             String email = payload.getIssuer();
             String role = String.valueOf(payload.get("role"));
 
-            return new DecryptedToken(email, role, isExpired);
+            return new DecryptedToken(email, role);
+        } catch (ExpiredJwtException e) {
+
+            String email = e.getClaims().getIssuer();
+            String role = e.getClaims().get("role") == null ? null : String.valueOf(e.getClaims().get("role"));
+
+            return new DecryptedToken(email, role, true);
         } catch (JwtException | IllegalArgumentException e ) {
             throw new BadCredentialsException("bad jwt token.", e);
         }
     }
 
     public String expireAccessToken(String email) {
-        Date issuedAt = new Date();
+        Date issuedAt = TimeUtil.timeCalc(new Date(), (-1) * ACCESS_TOKEN_TIME);
         return Jwts.builder()
                 .header().and()
                 .issuer(email)
                 .issuedAt(issuedAt)
-                .expiration(TimeUtil.timeCalc(issuedAt, (-1) * ACCESS_TOKEN_TIME))
+                .expiration(issuedAt)
                 .encryptWith(key, enc)
                 .compact();
     }
@@ -104,7 +106,7 @@ public class TokenService {
         throw new BadCredentialsException("bad refresh token");
     }
 
-    private void removeRefreshToken(String email) {
+    public void removeRefreshToken(String email) {
         refreshTokenRepository.deleteById(email);
     }
 

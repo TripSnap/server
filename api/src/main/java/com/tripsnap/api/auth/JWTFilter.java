@@ -1,6 +1,7 @@
 package com.tripsnap.api.auth;
 
 import com.tripsnap.api.auth.exception.AccessTokenExpiredException;
+import com.tripsnap.api.auth.login.JWTAuthenticationToken;
 import com.tripsnap.api.auth.vo.DecryptedToken;
 import com.tripsnap.api.auth.vo.TokenData;
 import jakarta.servlet.FilterChain;

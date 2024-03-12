@@ -1,7 +1,7 @@
 package com.tripsnap.api.config;
 
 import com.tripsnap.api.auth.JWTFilter;
-import com.tripsnap.api.auth.LoginFilter;
+import com.tripsnap.api.auth.login.LoginFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

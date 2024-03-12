@@ -1,12 +1,12 @@
-package com.tripsnap.api.auth;
+package com.tripsnap.api.auth.login;
 
+import com.tripsnap.api.auth.TokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
@@ -23,8 +23,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        User user = (User) authentication.getPrincipal();
-        String email = String.valueOf(user.getUsername());
+        String email = String.valueOf(authentication.getPrincipal());
         Optional<? extends GrantedAuthority> authority = authentication.getAuthorities().stream().findFirst();
         String role = authority.map(grantedAuthority -> String.valueOf(grantedAuthority.getAuthority())).orElse(null);
 

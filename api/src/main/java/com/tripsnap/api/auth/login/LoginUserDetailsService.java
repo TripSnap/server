@@ -1,5 +1,6 @@
-package com.tripsnap.api.auth;
+package com.tripsnap.api.auth.login;
 
+import com.tripsnap.api.auth.Roles;
 import com.tripsnap.api.domain.entity.Member;
 import com.tripsnap.api.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;

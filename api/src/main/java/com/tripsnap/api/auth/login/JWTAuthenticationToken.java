@@ -1,4 +1,4 @@
-package com.tripsnap.api.auth;
+package com.tripsnap.api.auth.login;
 
 import com.tripsnap.api.auth.vo.TokenData;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
