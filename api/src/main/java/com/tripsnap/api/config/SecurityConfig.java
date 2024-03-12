@@ -2,6 +2,7 @@ package com.tripsnap.api.config;
 
 
 import com.tripsnap.api.auth.JWTFilter;
+import com.tripsnap.api.auth.Roles;
 import com.tripsnap.api.auth.exception.AuthenticationExceptionHandler;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.auth.login.LoginSuccessHandler;
@@ -39,14 +40,14 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/login","/test").hasRole(Roles.ANONYMOUS)
+                        .anyRequest().hasRole(Roles.USER)
                 )
                 .csrf(csrf -> csrf.disable())
                 .headers(header -> header.frameOptions(options -> options.sameOrigin()))
                 .addFilterBefore(jwtFilter(), AuthorizationFilter.class)
-                .addFilterBefore(loginFilter( providerManager()), AuthorizationFilter.class)
-                .addFilterBefore(logoutFilter(),  AuthorizationFilter.class)
+                .addFilterAfter(loginFilter(providerManager()), AuthorizationFilter.class)
+                .addFilterAfter(logoutFilter(), AuthorizationFilter.class)
                 .logout((logout) ->logout.disable())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -98,7 +98,7 @@ public class TokenService {
         if(refreshToken.isPresent()) {
             String uuid = refreshToken.get().getUuid();
             LocalDateTime expiration = refreshToken.get().getExpiration();
-            if(StringUtils.hasText(uuid) && uuid.equals(token) && LocalDateTime.now().isAfter(expiration)) {
+            if(StringUtils.hasText(uuid) && uuid.equals(token) && LocalDateTime.now().isBefore(expiration)) {
                 return true;
             }
             removeRefreshToken(email);
