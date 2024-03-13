@@ -24,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static jakarta.servlet.DispatcherType.ERROR;
 
@@ -35,12 +37,14 @@ public class SecurityConfig {
     ApplicationContext context;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector).servletPath("/path");
+
         http
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
-                        .requestMatchers("/login","/test").hasRole(Roles.ANONYMOUS)
+                        .requestMatchers(mvcMatcherBuilder.pattern("/login"),mvcMatcherBuilder.pattern("/test")).hasRole(Roles.ANONYMOUS)
                         .anyRequest().hasRole(Roles.USER)
                 )
                 .csrf(csrf -> csrf.disable())

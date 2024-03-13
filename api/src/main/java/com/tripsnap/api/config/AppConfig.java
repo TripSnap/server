@@ -5,15 +5,15 @@ import com.tripsnap.api.auth.login.LoginFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@Configuration
-@EnableJpaRepositories(basePackages = "com.tripsnap.api.repository")
 @EnableRedisRepositories(basePackages = "com.tripsnap.api.auth.redis")
+@Configuration
+@EnableWebMvc
 public class AppConfig {
     @Bean
     public FilterRegistrationBean<LoginFilter> loginFilterRegistration(LoginFilter filter) {
