@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/login"),mvcMatcherBuilder.pattern("/test")).hasRole(Roles.ANONYMOUS)
+                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
                         .anyRequest().hasRole(Roles.USER)
                 )
                 .csrf(csrf -> csrf.disable())

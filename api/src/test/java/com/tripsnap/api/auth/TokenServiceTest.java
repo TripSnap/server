@@ -34,13 +34,20 @@ class TokenServiceTest {
     @Autowired
     TokenService tokenService;
 
+    GenericContainer redis;
+
     @BeforeAll
     void init() {
         Consumer<CreateContainerCmd> cmd = e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(16379), new ExposedPort(6379)));
 
-        GenericContainer redis = new GenericContainer("redis")
+        redis = new GenericContainer("redis")
                 .withCreateContainerCmdModifier(cmd);
         redis.start();
+    }
+
+    @AfterAll
+    void end() {
+        redis.stop();
     }
 
     @Test

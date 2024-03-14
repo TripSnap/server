@@ -34,11 +34,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("로그아웃 필터 테스트")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {SecurityConfig.class, AppConfig.class, RedisTestConfig.class})
 @WebAppConfiguration
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import({TokenService.class, JWTLogoutHandler.class})
 public class LogoutFilterTest {
     private MockMvc mvc;
@@ -55,13 +55,20 @@ public class LogoutFilterTest {
     @Autowired
     RefreshTokenRepository refreshTokenRepository;
 
+    GenericContainer redis;
+
     @BeforeAll
     void init() {
         Consumer<CreateContainerCmd> cmd = e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(16379), new ExposedPort(6379)));
 
-        GenericContainer redis = new GenericContainer("redis")
+        redis = new GenericContainer("redis")
                 .withCreateContainerCmdModifier(cmd);
         redis.start();
+    }
+
+    @AfterAll
+    void end() {
+        redis.stop();
     }
 
     @BeforeEach
