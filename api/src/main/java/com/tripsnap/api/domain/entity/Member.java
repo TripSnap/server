@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Builder
@@ -24,4 +27,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
     private String photo;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification_id")
+    List<Notification> notifications = new ArrayList<>();
 }
