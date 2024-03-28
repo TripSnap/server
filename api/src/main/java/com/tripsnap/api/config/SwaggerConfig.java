@@ -5,10 +5,7 @@ import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -18,9 +15,8 @@ import java.util.List;
 
 @ConditionalOnProperty(
         name = {"springdoc.swagger-ui.enabled"},
-        matchIfMissing = true
+        havingValue = "true"
 )
-
 @Configuration
 public class SwaggerConfig {
 
@@ -29,6 +25,7 @@ public class SwaggerConfig {
 
     @Bean
     @Primary
+    @Lazy
     public SwaggerUiConfigParameters swaggerUiConfig(SwaggerUiConfigParameters config) {
         config.setSupportedSubmitMethods(List.of());
         return config;
