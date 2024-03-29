@@ -8,9 +8,11 @@ import jakarta.validation.constraints.Size;
 public record JoinDTO(
         @Email @Size(min=1,max=50) @NotBlank
         String email,
-        @Pattern(regexp = "/^(?=.*[a-zA-Z])(?=.*[0-9]).{12,100}$/")
+        @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9]).{12,100}$")
+        @NotBlank
         String password,
-        @Pattern(regexp = "/^[a-zA-Z가-힣][0-9a-zA-Z가-힣]{4,19}$/")
+        @Pattern(regexp = "^[a-zA-Z가-힣][0-9a-zA-Z가-힣]{4,19}$")
+        @NotBlank
         String nickname
 ) {
 }
