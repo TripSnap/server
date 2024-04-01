@@ -1,9 +1,9 @@
 package com.tripsnap.api.controller.api;
 
 
-import com.tripsnap.api.controller.response.ResponseDTO;
 import com.tripsnap.api.domain.dto.GroupInsDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
+import com.tripsnap.api.domain.dto.ResultDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,12 +30,12 @@ public interface GroupApi {
     ResponseEntity<?> groups(User user, PageDTO param);
     @Operation(summary = "그룹 생성")
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> addGroup(User user, GroupInsDTO param);
 
     @Operation(summary = "그룹 삭제")
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> removeGroup(User user, Long groupId);
 
 }

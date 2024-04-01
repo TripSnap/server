@@ -1,4 +1,4 @@
-package com.tripsnap.api.controller.response;
+package com.tripsnap.api.domain.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,24 +7,24 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 @NoArgsConstructor(access= AccessLevel.PRIVATE)
-public class ResponseDTO {
+public class ResultDTO {
 
-    public static ResponseDTO.SuccessOrNot SuccessOrNot(boolean success, String message) {
+    public static ResultDTO.SuccessOrNot SuccessOrNot(boolean success, String message) {
         return new SuccessOrNot(success, message);
     }
-    public static ResponseDTO.SimpleSuccessOrNot SuccessOrNot(boolean success) {
+    public static ResultDTO.SimpleSuccessOrNot SuccessOrNot(boolean success) {
         return new SimpleSuccessOrNot(success);
     }
-    public static <T> ResponseDTO.WithData<T> WithData(T data, String message) {
+    public static <T> ResultDTO.WithData<T> WithData(T data, String message) {
         return new WithData<>(data, message);
     }
-    public static <T> ResponseDTO.SimpleWithData<T> WithData(T data) {
+    public static <T> ResultDTO.SimpleWithData<T> WithData(T data) {
         return new SimpleWithData<>(data);
     }
-    public static <T> ResponseDTO.WithPageData<T> WithPageData(Pageable pageable, T data, String message) {
+    public static <T> ResultDTO.WithPageData<T> WithPageData(Pageable pageable, T data, String message) {
         return new WithPageData<>(pageable.getPageNumber(), pageable.getPageSize(), data,message);
     }
-    public static <T> ResponseDTO.SimpleWithPageData<T> WithPageData(Pageable pageable, T data) {
+    public static <T> ResultDTO.SimpleWithPageData<T> WithPageData(Pageable pageable, T data) {
         return new SimpleWithPageData<>(pageable.getPageNumber(), pageable.getPageSize(), data);
     }
 

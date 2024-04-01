@@ -1,10 +1,10 @@
 package com.tripsnap.api.service;
 
 
-import com.tripsnap.api.controller.response.ResponseDTO;
 import com.tripsnap.api.domain.dto.GroupDTO;
 import com.tripsnap.api.domain.dto.GroupInsDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
+import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.entity.Friend;
 import com.tripsnap.api.domain.entity.Group;
 import com.tripsnap.api.domain.entity.GroupMemberRequest;
@@ -34,20 +34,20 @@ public class GroupService {
     private final GroupMapper groupMapper;
 
     // 회원이 가입한 그룹 리스트
-    public ResponseDTO.SimpleWithPageData<List<GroupDTO>> getGroupList(String email, PageDTO param) {
+    public ResultDTO.SimpleWithPageData<List<GroupDTO>> getGroupList(String email, PageDTO param) {
         Optional<Member> optMember = memberRepository.findByEmail(email);
         if(optMember.isPresent()) {
             Member member = optMember.get();
             Pageable pageable = Pageable.ofSize(param.pagePerCnt()).withPage(param.page());
             List<Group> groups = groupMemberRepository.getGroupsByMemberId(pageable,member.getId());
 
-            return ResponseDTO.WithPageData(pageable, groupMapper.toDTOList(groups));
+            return ResultDTO.WithPageData(pageable, groupMapper.toDTOList(groups));
         }
         throw ServiceException.BadRequestException();
     }
 
     @Transactional
-    public ResponseDTO.SimpleSuccessOrNot createGroup(String email, GroupInsDTO groupInsDTO) {
+    public ResultDTO.SimpleSuccessOrNot createGroup(String email, GroupInsDTO groupInsDTO) {
         Optional<Member> optMember = memberRepository.findByEmail(email);
         if(optMember.isPresent()) {
             Member member = optMember.get();
@@ -70,18 +70,18 @@ public class GroupService {
             group.setMemberRequests(groupMemberRequests);
             groupRepository.save(group);
 
-            return ResponseDTO.SuccessOrNot(true);
+            return ResultDTO.SuccessOrNot(true);
         }
         throw ServiceException.BadRequestException();
     }
 
     @Transactional
-    public ResponseDTO.SimpleSuccessOrNot deleteGroup(String email, Long groupId) {
+    public ResultDTO.SimpleSuccessOrNot deleteGroup(String email, Long groupId) {
         Optional<Member> optMember = memberRepository.findByEmail(email);
         if(optMember.isPresent()) {
             Member member = optMember.get();
             groupRepository.removeGroupByOwnerIdAndId(member.getId(), groupId);
-            return ResponseDTO.SuccessOrNot(true);
+            return ResultDTO.SuccessOrNot(true);
         }
         throw ServiceException.BadRequestException();
     }

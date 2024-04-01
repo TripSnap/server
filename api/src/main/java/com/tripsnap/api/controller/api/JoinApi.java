@@ -1,7 +1,7 @@
 package com.tripsnap.api.controller.api;
 
-import com.tripsnap.api.controller.response.ResponseDTO;
 import com.tripsnap.api.domain.dto.JoinDTO;
+import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.dto.VerifyCodeDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,7 +21,7 @@ import java.util.Map;
 })
 public interface JoinApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "회원가입")
     ResponseEntity<?> join(JoinDTO param);
     
@@ -30,12 +30,12 @@ public interface JoinApi {
                     schemaProperties = {@SchemaProperty(name="email",schema = @Schema(implementation = String.class))}
             ))
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "이메일 중복체크")
     ResponseEntity<?> checkEmail( Map<String, String> param);
     
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "이메일 코드 인증")
     ResponseEntity<?> verifyCode(VerifyCodeDTO param);
 }

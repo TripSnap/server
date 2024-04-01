@@ -2,8 +2,8 @@ package com.tripsnap.api.controller;
 
 
 import com.tripsnap.api.controller.api.JoinApi;
-import com.tripsnap.api.controller.response.ResponseDTO;
 import com.tripsnap.api.domain.dto.JoinDTO;
+import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.dto.VerifyCodeDTO;
 import com.tripsnap.api.service.JoinService;
 import com.tripsnap.api.utils.ParameterUtil;
@@ -27,7 +27,7 @@ public class JoinController implements JoinApi {
     @PostMapping
     @Override
     public ResponseEntity<?> join(@Valid @RequestBody JoinDTO param) {
-        return ResponseEntity.ok(ResponseDTO.SuccessOrNot(joinService.join(param)));
+        return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.join(param)));
     }
 
     @PostMapping("/check-email")
@@ -35,12 +35,12 @@ public class JoinController implements JoinApi {
     public ResponseEntity<?> checkEmail(@RequestBody Map<String, String> param) {
         String email = String.valueOf(param.get("email"));
         ParameterUtil.validation(email, ValidationType.Email);
-        return ResponseEntity.ok(ResponseDTO.SuccessOrNot(joinService.checkEmail(email)));
+        return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.checkEmail(email)));
     }
 
     @PostMapping("/verify-code")
     @Override
     public ResponseEntity<?> verifyCode(@Valid @RequestBody VerifyCodeDTO param) {
-        return ResponseEntity.ok(ResponseDTO.SuccessOrNot(joinService.verifyEmailCode(param.email(), param.code())));
+        return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.verifyEmailCode(param.email(), param.code())));
     }
 }
