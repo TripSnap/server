@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,8 +78,10 @@ class MapperTest {
             Assertions.assertAll(
                     () -> Assertions.assertTrue(optGroup.isPresent()),
                     () -> Assertions.assertEquals(group.getId(), groupDTO.id()),
-                    // sec 자릿수 때문에 LocalDateTime을 문자열로 변환 후 contains로 검사
-                    () -> Assertions.assertTrue(group.getCreatedAt().toString().contains(groupDTO.createdAt()))
+                    () -> Assertions.assertEquals(
+                            group.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
+                            groupDTO.createdAt()
+                    )
             );
 
             // group entity의 optMember entity -> memberDTO 검사
@@ -93,5 +96,15 @@ class MapperTest {
             );
 
         }
+    }
+
+    @DisplayName("date format 검사")
+    @Test
+    void dateFormatTest() {
+        Member member = Member.builder().build();
+        LocalDateTime now = LocalDateTime.now();
+        ReflectionTestUtils.setField(member,"createdAt", now);
+        MemberDTO memberDTO = memberMapper.toMemberDTO(member);
+        Assertions.assertEquals(memberDTO.joinDate(), now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
     }
 }

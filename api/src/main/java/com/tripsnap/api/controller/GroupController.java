@@ -33,4 +33,12 @@ public class GroupController implements GroupApi {
     public ResponseEntity<?> addGroup(@AuthenticationPrincipal User user, @Valid @RequestBody GroupInsDTO param) {
         return ResponseEntity.ok(groupService.createGroup(user.getUsername(), param));
     }
+
+    @Override
+    @DeleteMapping("/{group-id}")
+    public ResponseEntity<?> removeGroup(@AuthenticationPrincipal User user, @PathVariable("group-id") Long groupId) {
+        return ResponseEntity.ok(groupService.deleteGroup(user.getUsername(), groupId));
+    }
+
+
 }

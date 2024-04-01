@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,4 +24,7 @@ public class GroupAlbum extends BaseEntity {
     private Double longitude;
     private String address;
     private String thumbnail;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "groupAlbum")
+    @JoinColumn(name="album_photo_id")
+    private List<AlbumPhoto> albumPhotoList = new ArrayList<>();
 }

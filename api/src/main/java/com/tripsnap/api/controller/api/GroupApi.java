@@ -32,4 +32,10 @@ public interface GroupApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> addGroup(User user, GroupInsDTO param);
+
+    @Operation(summary = "그룹 삭제")
+    @ApiResponse(responseCode = "200", description = "successful operation",
+            content = @Content(schema = @Schema(implementation = ResponseDTO.SimpleSuccessOrNot.class)))
+    ResponseEntity<?> removeGroup(User user, Long groupId);
+
 }

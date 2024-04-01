@@ -74,4 +74,15 @@ public class GroupService {
         }
         throw ServiceException.BadRequestException();
     }
+
+    @Transactional
+    public ResponseDTO.SimpleSuccessOrNot deleteGroup(String email, Long groupId) {
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        if(optMember.isPresent()) {
+            Member member = optMember.get();
+            groupRepository.removeGroupByOwnerIdAndId(member.getId(), groupId);
+            return ResponseDTO.SuccessOrNot(true);
+        }
+        throw ServiceException.BadRequestException();
+    }
 }

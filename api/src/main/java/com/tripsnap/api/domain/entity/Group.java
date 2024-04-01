@@ -8,7 +8,6 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -22,7 +21,8 @@ public class Group extends BaseEntity {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="owner_id", referencedColumnName = "member_id")
     private Member owner;
-    @OneToMany
+
+    @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name="album_id")
     private List<GroupAlbum> groupAlbums = new ArrayList<>();
 
@@ -33,7 +33,16 @@ public class Group extends BaseEntity {
     @Setter
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
     private List<GroupMemberRequest> memberRequests = new ArrayList<>();
-//    @OneToMany(cascade = CascadeType.ALL)
+
+    @Builder
+    public Group(Long id, String title, Member owner, List<GroupMemberRequest> memberRequests) {
+        this.id = id;
+        this.title = title;
+        this.owner = owner;
+        this.memberRequests = memberRequests;
+    }
+
+    //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name="group_id")
 //    private List<GroupMemberRequest> memberRequests = new ArrayList<>();
 }
