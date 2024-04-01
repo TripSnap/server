@@ -11,7 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class MemberMapper {
     @Autowired
+    public void setPasswordEncode(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
     private PasswordEncoder passwordEncoder;
+
     public TemporaryMember toTemporaryMember(JoinDTO source) {
         return TemporaryMember.builder()
                 .email(source.email())
