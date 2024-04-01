@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 
 @DisplayName("MapStruct Mapper Bean Inject 테스트")
@@ -24,6 +25,8 @@ class MapperBeanTest {
     void passwordEncoderTest() {
         JoinDTO dto = new JoinDTO("test_email@naver.com", "paskdng@#!dk", "닉네임2");
         Assertions.assertDoesNotThrow(() -> {
+            Object passwordEncoder = ReflectionTestUtils.getField(memberMapper, "passwordEncoder");
+            Assertions.assertNotNull(passwordEncoder);
             TemporaryMember temporaryMember = memberMapper.toTemporaryMember(dto);
         });
     }
