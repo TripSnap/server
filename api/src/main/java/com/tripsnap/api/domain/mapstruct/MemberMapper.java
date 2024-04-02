@@ -1,11 +1,17 @@
 package com.tripsnap.api.domain.mapstruct;
 
 import com.tripsnap.api.domain.dto.JoinDTO;
+import com.tripsnap.api.domain.dto.MemberDTO;
+import com.tripsnap.api.domain.dto.SearchMemberDTO;
+import com.tripsnap.api.domain.entity.Member;
 import com.tripsnap.api.domain.entity.TemporaryMember;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
@@ -23,4 +29,11 @@ public abstract class MemberMapper {
                 .nickname(source.nickname())
                 .build();
     }
+
+    @Mapping(source = "createdAt", target = "joinDate", dateFormat = "yyyy/MM/dd")
+    public abstract MemberDTO toMemberDTO(Member member);
+
+    public abstract SearchMemberDTO toSearchMemberDTO(Member member);
+
+    public abstract List<MemberDTO> toMemberDTOList(List<Member> source);
 }
