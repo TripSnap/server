@@ -52,7 +52,7 @@ public class GroupService {
         if(optMember.isPresent()) {
             Member member = optMember.get();
             // 이메일을 통해 member의 친구 목록애서 회원 정보를 가져옴
-            List<Friend> friends = friendRepository.getFriendList(member.getId(), groupInsDTO.memberEmails());
+            List<Friend> friends = friendRepository.getFriendListByEmail(member.getId(), groupInsDTO.memberEmails());
 
             // group 생성 및 insert
             Group group = Group.builder().owner(member)
@@ -80,7 +80,7 @@ public class GroupService {
         Optional<Member> optMember = memberRepository.findByEmail(email);
         if(optMember.isPresent()) {
             Member member = optMember.get();
-            groupRepository.removeGroupByOwnerIdAndId(member.getId(), groupId);
+            groupRepository.removeGroupByIdAndOwnerId(groupId, member.getId());
             return ResultDTO.SuccessOrNot(true);
         }
         throw ServiceException.BadRequestException();

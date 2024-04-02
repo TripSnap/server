@@ -5,6 +5,7 @@ import com.tripsnap.api.domain.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class CustomGroupMemberRepositoryImpl implements CustomGroupMemberReposit
     private EntityManager em;
 
     // 회원이 가입한 그룹 리스트를 가져온다
+    @Transactional(readOnly = true)
     @Override
     public List<Group> getGroupsByMemberId(Pageable pageable, Long memberId) {
         QGroupMember groupMember = QGroupMember.groupMember;
@@ -28,6 +30,7 @@ public class CustomGroupMemberRepositoryImpl implements CustomGroupMemberReposit
     }
 
     // 그룹의 멤버들을 가져온다
+    @Transactional(readOnly = true)
     @Override
     public List<Member> getGroupMembersByGroupId(Pageable pageable, Long groupId) {
         QGroupMember groupMember = QGroupMember.groupMember;
