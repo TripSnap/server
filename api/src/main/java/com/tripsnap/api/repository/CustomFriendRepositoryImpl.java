@@ -8,15 +8,15 @@ import com.tripsnap.api.domain.entity.QMember;
 import com.tripsnap.api.domain.entity.key.MemberFriendId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Component
 public class CustomFriendRepositoryImpl implements CustomFriendRepository {
     @PersistenceContext
     private EntityManager em;
-
-    private final FriendRepository friendRepository = (FriendRepository) this;
 
     @Transactional(readOnly = true)
     @Override
@@ -40,8 +40,11 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
         MemberFriendId id1 = MemberFriendId.builder().memberId(memberId).friendId(friendId).build();
         MemberFriendId id2 = MemberFriendId.builder().memberId(friendId).friendId(memberId).build();
 
-        friendRepository.save(Friend.builder().id(id1).build());
-        friendRepository.save(Friend.builder().id(id2).build());
+        Friend friend1 = Friend.builder().id(id1).build();
+        Friend friend2 = Friend.builder().id(id2).build();
+
+        em.persist(friend1);
+        em.persist(friend2);
 
         return true;
     }
