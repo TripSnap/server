@@ -3,8 +3,10 @@ package com.tripsnap.api.domain.mapstruct;
 import com.tripsnap.api.domain.dto.GroupDTO;
 import com.tripsnap.api.domain.dto.JoinDTO;
 import com.tripsnap.api.domain.dto.MemberDTO;
+import com.tripsnap.api.domain.dto.NotificationDTO;
 import com.tripsnap.api.domain.entity.Group;
 import com.tripsnap.api.domain.entity.Member;
+import com.tripsnap.api.domain.entity.Notification;
 import com.tripsnap.api.domain.entity.TemporaryMember;
 import org.junit.jupiter.api.*;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -24,11 +26,14 @@ class MapperTest {
     PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
     MemberMapper memberMapper;
     GroupMapper groupMapper;
+    NotificationMapper notificationMapper;
 
     @BeforeAll
     void init() {
         memberMapper = new MemberMapperImpl();
         groupMapper = new GroupMapperImpl();
+        notificationMapper = new NotificationMapperImpl();
+
         ReflectionTestUtils.setField(memberMapper, "passwordEncoder", passwordEncoder);
     }
 
@@ -106,5 +111,26 @@ class MapperTest {
         ReflectionTestUtils.setField(member,"createdAt", now);
         MemberDTO memberDTO = memberMapper.toMemberDTO(member);
         Assertions.assertEquals(memberDTO.joinDate(), now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+    }
+
+    @DisplayName("@Mapping expression에서 boolean 타입으로 변환 테스트")
+    @Test
+    void mappingAnnotationExpressionTest() {
+        // 리스트 아닐 때
+        Notification notBroadCast = Notification.builder().memberId(1L).build();
+        Notification broadCast = Notification.builder().memberId(0L).build();
+
+        NotificationDTO notBroadCastDTO = notificationMapper.toNotificationDTO(notBroadCast);
+        NotificationDTO broadCastDTO = notificationMapper.toNotificationDTO(broadCast);
+
+        Assertions.assertFalse(notBroadCastDTO.isBroadCast());
+        Assertions.assertTrue(broadCastDTO.isBroadCast());
+
+        // 리스트일 때
+        List<Notification> notifications = List.of(notBroadCast, broadCast);
+        List<NotificationDTO> dtoList = notificationMapper.toDTOList(notifications);
+
+        Assertions.assertFalse(dtoList.get(0).isBroadCast());
+        Assertions.assertTrue(dtoList.get(1).isBroadCast());
     }
 }
