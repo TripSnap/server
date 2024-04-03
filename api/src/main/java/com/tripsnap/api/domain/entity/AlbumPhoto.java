@@ -16,6 +16,7 @@ public class AlbumPhoto extends BaseEntity {
     @Column(name="album_photo_id")
     private Long id;
     @ManyToOne
+    @JoinColumn(name = "album_id")
     private GroupAlbum groupAlbum;
     @OneToOne
     @JoinColumn(name = "member_id")
