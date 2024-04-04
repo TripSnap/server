@@ -5,8 +5,8 @@ import com.tripsnap.api.domain.dto.RemoveNotificationDTO;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ public interface NotificationApi {
     @Operation(summary = "알람 읽음처리")
     ResponseEntity<?> read(User user);
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true,
-            content=@Content(examples = @ExampleObject(value = "{\"existed\":true}")))
+            content=@Content(schemaProperties = @SchemaProperty(name = "existed", schema = @Schema(implementation = Boolean.class))))
     @Operation(summary = "새로운 알람 있는지 확인")
     ResponseEntity<?> checkNewNotification(User user);
 }

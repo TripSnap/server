@@ -10,6 +10,7 @@ import com.tripsnap.api.utils.ParameterUtil;
 import com.tripsnap.api.utils.ValidationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -19,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/friend")
+@RequestMapping(value = "/friend", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class FriendController implements FriendApi {
     private final FriendService friendService;
 
     @GetMapping("/list")
     @Override
-    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @Valid @RequestBody PageDTO pageDTO) {
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @Valid @RequestParam PageDTO pageDTO) {
         return ResponseEntity.ok(friendService.getFriendList(user.getUsername(), pageDTO));
     }
 

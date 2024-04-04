@@ -20,13 +20,6 @@ import org.springframework.security.core.userdetails.User;
 public interface GroupApi {
     @Operation(summary = "회원이 가입한 그룹 리스트")
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
-//
-//    @ApiResponse(responseCode = "200", description = "successful operation",
-//            content = @Content(
-//                    schema=@Schema(implementation = MemberDTO.class)
-//                    , schemaProperties = {@SchemaProperty(name = "", schema = @Schema(implementation = GroupDTO.class)),@SchemaProperty(name = "data", schema = @Schema(implementation = ResponseDTO.SimpleWithPageData.class))}
-//            )
-//    )
     ResponseEntity<?> groups(User user, PageDTO param);
     @Operation(summary = "그룹 생성")
     @ApiResponse(responseCode = "200", description = "successful operation",
