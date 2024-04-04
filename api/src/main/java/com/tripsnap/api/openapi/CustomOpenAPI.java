@@ -15,7 +15,7 @@ import org.springframework.util.StringUtils;
 import reactor.util.function.Tuple2;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomOpenAPI {
@@ -23,15 +23,15 @@ public class CustomOpenAPI {
     private Operation operation;
     private RequestBody requestBody;
     private ApiResponses apiResponses;
-    private Consumer<CustomOpenAPI> function;
+    private BiConsumer<OpenAPI, CustomOpenAPI> function;
     private String tag;
     private String summary;
 
     public static class Decorator {
         private CustomOpenAPI api;
 
-        public static Decorator get(OpenAPI openAPI) {
-            return new Decorator((api) -> {
+        public static Decorator get() {
+            return new Decorator((openAPI, api) -> {
                 PathItem pathItem = new PathItem().get(api.operation);
                 if(StringUtils.hasText(api.summary)) {
                     pathItem.description(api.summary);
@@ -40,8 +40,8 @@ public class CustomOpenAPI {
             });
         }
 
-        public static Decorator post(OpenAPI openAPI) {
-            return new Decorator((api) -> {
+        public static Decorator post() {
+            return new Decorator((openAPI, api) -> {
                 PathItem pathItem = new PathItem().post(api.operation);
                 if(StringUtils.hasText(api.summary)) {
                     pathItem.description(api.summary);
@@ -50,7 +50,7 @@ public class CustomOpenAPI {
             });
         }
 
-        public Decorator(Consumer<CustomOpenAPI> function) {
+        public Decorator(BiConsumer<OpenAPI, CustomOpenAPI> function) {
             api = new CustomOpenAPI();
             api.function = function;
         }
@@ -100,21 +100,24 @@ public class CustomOpenAPI {
         }
 
         private Content content(List<Tuple2<String, String>> paramList) {
-            if(paramList == null) return new Content();
+            Content content = new Content();
 
-            MediaType mediaType = new MediaType();
-            Schema<Object> schema = new Schema<>();
-            for(Tuple2<String, String> tuple : paramList) {
-                schema.addProperty(tuple.getT1(), new Schema().type(tuple.getT2()));
+            if(paramList != null) {
+                MediaType mediaType = new MediaType();
+                Schema<Object> schema = new Schema<>();
+                for(Tuple2<String, String> tuple : paramList) {
+                    schema.addProperty(tuple.getT1(), new Schema().type(tuple.getT2()));
+                }
+                content.addMediaType(
+                        org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
+                        mediaType.schema(schema)
+                );
             }
 
-            return new Content()
-                    .addMediaType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
-                            mediaType.schema(schema)
-                    );
+            return content;
         }
 
-        public void build() {
+        public void set(OpenAPI openAPI) {
             api.operation = new Operation();
             if(api.requestBody != null) {
                 api.operation.setRequestBody(api.requestBody);
@@ -129,7 +132,7 @@ public class CustomOpenAPI {
                 api.operation.setSummary(api.summary);
             }
 
-            api.function.accept(api);
+            api.function.accept(openAPI, api);
         }
     }
 }

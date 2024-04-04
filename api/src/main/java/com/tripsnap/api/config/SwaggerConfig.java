@@ -59,16 +59,16 @@ public class SwaggerConfig {
         OpenAPI openAPI = new OpenAPI();
 
         CustomOpenAPI.Decorator
-                .post(openAPI).pathname("/login").tag("auth").summary("로그인")
+                .post().pathname("/login").tag("auth").summary("로그인")
                 .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
                 .response("200", "successful operation")
-                .build();
+                .set(openAPI);
 
         CustomOpenAPI.Decorator
-                .get(openAPI).pathname("/logout").tag("auth").summary("로그아웃")
+                .get().pathname("/logout").tag("auth").summary("로그아웃")
 //                .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
                 .response("200", "successful operation")
-                .build();
+                .set(openAPI);
 
         return openAPI;
     }
