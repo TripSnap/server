@@ -1,6 +1,8 @@
 package com.tripsnap.api.config;
 
 
+import com.tripsnap.api.openapi.CustomOpenAPI;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import reactor.util.function.Tuples;
 
 import java.util.List;
 
@@ -49,5 +52,24 @@ public class SwaggerConfig {
                 ).permitAll()
         );
         return http.build();
+    }
+
+    @Bean
+    public OpenAPI customOpenAPI() {
+        OpenAPI openAPI = new OpenAPI();
+
+        CustomOpenAPI.Decorator
+                .post(openAPI).pathname("/login").tag("auth").summary("로그인")
+                .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
+                .response("200", "successful operation")
+                .build();
+
+        CustomOpenAPI.Decorator
+                .get(openAPI).pathname("/logout").tag("auth").summary("로그아웃")
+//                .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
+                .response("200", "successful operation")
+                .build();
+
+        return openAPI;
     }
 }
