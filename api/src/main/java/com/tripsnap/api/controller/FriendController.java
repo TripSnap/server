@@ -4,6 +4,7 @@ package com.tripsnap.api.controller;
 import com.tripsnap.api.controller.api.FriendApi;
 import com.tripsnap.api.domain.dto.MemberDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
+import com.tripsnap.api.domain.dto.ProcessOption;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.service.FriendService;
 import com.tripsnap.api.utils.ParameterUtil;
@@ -47,12 +48,12 @@ public class FriendController implements FriendApi {
         return ResponseEntity.ok(friendService.sendRequest(user.getUsername(), email));
     }
 
-    @PostMapping("/{option:^(allow)|(deny)$}-request")
+    @PostMapping("/{option:allow|deny}-request")
     @Override
-    public ResponseEntity<?> processRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, String> param, @PathVariable("option") String option) {
+    public ResponseEntity<?> processRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, String> param, @PathVariable("option") ProcessOption option) {
         String email = param.get("email");
         ParameterUtil.validation(email, ValidationType.Email);
-        return ResponseEntity.ok(friendService.processFriendRequest(user.getUsername(), email, "allow".equals(option)));
+        return ResponseEntity.ok(friendService.processFriendRequest(user.getUsername(), email, option.isAllow()));
     }
 
     @DeleteMapping

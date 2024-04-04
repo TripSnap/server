@@ -2,10 +2,10 @@ package com.tripsnap.api.controller.api;
 
 
 import com.tripsnap.api.domain.dto.PageDTO;
+import com.tripsnap.api.domain.dto.ProcessOption;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.dto.SearchMemberDTO;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.SchemaProperty;
@@ -47,7 +47,7 @@ public interface FriendApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class))
     )
-    ResponseEntity<?> processRequest(User user, Map<String, String> param, @Parameter(description="'allow','deny' 사용 가능") String option);
+    ResponseEntity<?> processRequest(User user, Map<String, String> param, ProcessOption option);
 
     @Operation(summary = "친구 삭제")
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
