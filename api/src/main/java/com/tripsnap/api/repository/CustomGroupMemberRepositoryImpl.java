@@ -45,4 +45,21 @@ public class CustomGroupMemberRepositoryImpl implements CustomGroupMemberReposit
                 .fetch();
         return members;
     }
+    
+    // 초대 대기중인 회원들을 가져온다
+    @Transactional(readOnly = true)
+    @Override
+    public List<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId) {
+        QGroupMemberRequest groupMemberRequest = QGroupMemberRequest.groupMemberRequest;
+        QMember member = QMember.member;
+
+        // TODO: select 부분 Projections로 변경하기
+        JPAQuery<GroupMember> query = new JPAQuery<>(em);
+        List<Member> members = query.select(member).from(groupMemberRequest)
+                .innerJoin(groupMemberRequest)
+                .on(groupMemberRequest.id.groupId.eq(groupId), groupMemberRequest.id.memberId.eq(member.id))
+                .offset(pageable.getOffset()).limit(pageable.getPageSize())
+                .fetch();
+        return members;
+    }
 }

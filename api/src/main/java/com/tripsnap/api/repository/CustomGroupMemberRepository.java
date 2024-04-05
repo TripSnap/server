@@ -9,4 +9,5 @@ import java.util.List;
 public interface CustomGroupMemberRepository {
     List<Group> getGroupsByMemberId(Pageable pageable, Long memberId);
     List<Member> getGroupMembersByGroupId(Pageable pageable, Long groupId);
+    List<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId);
 }
