@@ -133,4 +133,18 @@ class MapperTest {
         Assertions.assertFalse(dtoList.get(0).isBroadCast());
         Assertions.assertTrue(dtoList.get(1).isBroadCast());
     }
+
+    @DisplayName("@Mapping defaultvalue boolean 테스트")
+    @Test
+    void mappingBooleanDefaultValueTest() {
+        List<Member> list = List.of(Member.builder().build(), Member.builder().build());
+        List<MemberDTO> dtoList = memberMapper.toWatingMemberDTOList(list);
+        dtoList.forEach(m -> {
+            Assertions.assertTrue(m.isWaiting());
+        });
+
+        Member member = Member.builder().build();
+        MemberDTO waitingMemberDTO = memberMapper.toWaitingMemberDTO(member);
+        Assertions.assertTrue(waitingMemberDTO.isWaiting());
+    }
 }
