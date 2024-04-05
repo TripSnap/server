@@ -9,6 +9,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.springframework.util.StringUtils;
 
+import java.lang.constant.Constable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
@@ -35,19 +36,29 @@ public class ParameterUtil {
         }
     }
 
-    public static void validation(String value, ValidationType type) {
-        if(!StringUtils.hasText(value)) {
+    public static <T extends Constable> void validation(String value, ValidationType validationType, Class<T> type) {
+        try {
+            if(Long.class == type) {
+                ParameterUtil.validation(Long.valueOf(value), validationType);
+            }
+        } catch (IllegalArgumentException e) {
+            throw ServiceException.BadRequestException();
+        }
+    }
+
+    public static <T extends Constable> void validation(T value, ValidationType validationType) {
+        if(value == null || !StringUtils.hasText(String.valueOf(value))) {
             throw ServiceException.BadRequestException();
         }
         try {
-            var instance = type._class.getConstructor(String.class).newInstance(value);
+            var instance = validationType._class.getConstructor(value.getClass()).newInstance(value);
             Validator validator = validatorFactory.getValidator();
             Set<ConstraintViolation<Object>> violationSet =  validator.validate(instance);
             if(violationSet.size() > 0) {
                 throw ServiceException.BadRequestException();
             }
         } catch (NoSuchMethodException | InvocationTargetException|InstantiationException|IllegalAccessException e) {
-            throw new ServiceException();
+            throw ServiceException.BadRequestException();
         }
     }
 
