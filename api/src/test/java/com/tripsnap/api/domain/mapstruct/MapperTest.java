@@ -134,9 +134,9 @@ class MapperTest {
         Assertions.assertTrue(dtoList.get(1).isBroadCast());
     }
 
-    @DisplayName("@Mapping defaultvalue boolean 테스트")
+    @DisplayName("@Mapping expression boolean 테스트")
     @Test
-    void mappingBooleanDefaultValueTest() {
+    void mappingAnnotationExpressionTest2() {
         List<Member> list = List.of(Member.builder().build(), Member.builder().build());
         List<MemberDTO> dtoList = memberMapper.toWatingMemberDTOList(list);
         dtoList.forEach(m -> {
