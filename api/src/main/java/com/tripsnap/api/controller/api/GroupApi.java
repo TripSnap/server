@@ -36,20 +36,20 @@ public interface GroupApi {
 
     @Operation(summary = "그룹 멤버 리스트")
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
-    ResponseEntity<?> groupMembers(User user, Map<String, String> param);
+    ResponseEntity<?> groupMembers(User user, Map<String, Object> param);
 
     @Operation(summary = "그룹 탈퇴")
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
-    ResponseEntity<?> leaveGroup(User user, Map<String, String> param);
+    ResponseEntity<?> leaveGroup(User user, Map<String, Object> param);
 
     @Operation(summary = "그룹 초대 취소")
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
-    ResponseEntity<?> cancelInvite(User user, Map<String, String> param);
+    ResponseEntity<?> cancelInvite(User user, Map<String, Object> param);
 
     @Operation(summary = "그룹 초대 수락 및 거절")
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class)))
-    ResponseEntity<?> processInvite(User user, ProcessOption invite, Map<String, String> param);
+    ResponseEntity<?> processInvite(User user, ProcessOption invite, Map<String, Object> param);
 }

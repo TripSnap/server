@@ -32,7 +32,7 @@ public interface FriendApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schemaProperties = @SchemaProperty(name="data", schema = @Schema(implementation = SearchMemberDTO.class)))
     )
-    ResponseEntity<?> search(User user, Map<String, String> param);
+    ResponseEntity<?> search(User user, Map<String, Object> param);
 
 
     @Operation(summary = "친구 신청")
@@ -40,19 +40,19 @@ public interface FriendApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
-    ResponseEntity<?> sendRequest(User user, Map<String, String> param);
+    ResponseEntity<?> sendRequest(User user, Map<String, Object> param);
 
     @Operation(summary = "친구 수락 또는 거절")
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class))
     )
-    ResponseEntity<?> processRequest(User user, Map<String, String> param, ProcessOption option);
+    ResponseEntity<?> processRequest(User user, Map<String, Object> param, ProcessOption option);
 
     @Operation(summary = "친구 삭제")
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
-    ResponseEntity<?> remove(User user, Map<String, String> param);
+    ResponseEntity<?> remove(User user, Map<String, Object> param);
 }

@@ -27,7 +27,7 @@ public class ParameterUtil {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static <T> void validation(Map<String, String> param, Class<T> tClass)  {
+    public static <T> void validation(Map<String, Object> param, Class<T> tClass)  {
         T converted = objectMapper.convertValue(param, tClass);
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<T>> violationSet =  validator.validate(converted);

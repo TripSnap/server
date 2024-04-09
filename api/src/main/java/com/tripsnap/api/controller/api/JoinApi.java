@@ -32,7 +32,7 @@ public interface JoinApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "이메일 중복체크")
-    ResponseEntity<?> checkEmail( Map<String, String> param);
+    ResponseEntity<?> checkEmail( Map<String, Object> param);
     
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
