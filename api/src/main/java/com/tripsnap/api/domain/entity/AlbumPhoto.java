@@ -18,9 +18,9 @@ public class AlbumPhoto extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "album_id")
     private GroupAlbum groupAlbum;
-    @OneToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
     @Column(nullable = false)
     private String photo;
+
+    @Transient
+    private Member member;
 }

@@ -97,12 +97,12 @@ class ParameterUtilTest {
         Map<String, Object> map = Map.of("testLongValue", 1, "testStringValue", "email@naver.com");
         Assertions.assertDoesNotThrow(() -> {
             Long testValue = ParameterUtil.validationAndConvert(map.get("testLongValue"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
-            Assertions.assertTrue(testValue instanceof Long);
+            Assertions.assertInstanceOf(Long.class, testValue);
         });
 
         Assertions.assertDoesNotThrow(() -> {
             String testValue = ParameterUtil.validationAndConvert(map.get("testStringValue"), ValidationType.PrimitiveWrapper.Email);
-            Assertions.assertTrue(testValue instanceof String);
+            Assertions.assertInstanceOf(String.class, testValue);
         });
     }
 
@@ -124,8 +124,8 @@ class ParameterUtilTest {
         Map<String, Object> validValue2 = Map.of("groupId", 1L, "albumId", 2L);
         Assertions.assertDoesNotThrow(() -> {
             GroupAlbumParamDTO paramDTO = ParameterUtil.validationAndConvert(validValue2, GroupAlbumParamDTO.class);
-            Assertions.assertTrue(paramDTO.getAlbumId().equals(validValue2.get("albumId")));
-            Assertions.assertTrue(paramDTO.getGroupId().equals(validValue2.get("groupId")));
+            Assertions.assertEquals(paramDTO.getAlbumId(), validValue2.get("albumId"));
+            Assertions.assertEquals(paramDTO.getGroupId(), validValue2.get("groupId"));
         });
     }
 
@@ -135,12 +135,12 @@ class ParameterUtilTest {
         Map<String, Object> value = Map.of("email", "email@emial.test", "id", 196L);
         Assertions.assertDoesNotThrow(() -> {
             String email = ParameterUtil.validationAndConvert(value.get("email"), ValidationType.PrimitiveWrapper.Email);
-            Assertions.assertTrue(email instanceof String);
+            Assertions.assertInstanceOf(String.class, email);
 
         });
         Assertions.assertDoesNotThrow(() -> {
             Long id = ParameterUtil.validationAndConvert(value.get("id"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
-            Assertions.assertTrue(id instanceof Long);
+            Assertions.assertInstanceOf(Long.class, id);
 
         });
     }

@@ -17,6 +17,10 @@ public class ServiceException extends RuntimeException{
         return new ServiceException(HttpStatus.BAD_REQUEST);
     }
 
+    public static ServiceException PermissionDenied() {
+        return new ServiceException(HttpStatus.FORBIDDEN);
+    }
+
     @Getter
     private HttpStatus status;
 }
