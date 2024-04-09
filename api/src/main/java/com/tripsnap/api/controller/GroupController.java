@@ -44,14 +44,8 @@ public class GroupController implements GroupApi {
     @PostMapping("/members")
     @Override
     public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> groupMembers(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
-        ParameterUtil.validation(param, PageDTO.class);
-        ParameterUtil.validation(String.valueOf(param.get("groupId")), ValidationType.EntityId, Long.class);
-
-        Long id = Long.valueOf(String.valueOf(param.get("groupId")));
-        PageDTO pageDTO = new PageDTO(
-                Integer.parseInt(String.valueOf(param.get("page"))),
-                Integer.parseInt(String.valueOf(param.get("pagePerCnt")))
-        );
+        Long id = ParameterUtil.validationAndConvert(String.valueOf(param.get("groupId")), ValidationType.PrimitiveWrapper.EntityId, Long.class);
+        PageDTO pageDTO = ParameterUtil.validationAndConvert(param, PageDTO.class);
 
         return ResponseEntity.ok(groupService.getMemberList(user.getUsername(), id, pageDTO));
     }
@@ -59,24 +53,21 @@ public class GroupController implements GroupApi {
     @PostMapping("/leave")
     @Override
     public ResponseEntity<?> leaveGroup(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
-        ParameterUtil.validation(String.valueOf(param.get("groupId")), ValidationType.EntityId, Long.class);
-        Long id = Long.valueOf(String.valueOf(param.get("groupId")));
+        Long id = ParameterUtil.validationAndConvert(param.get("groupId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
         return null;
     }
 
     @PostMapping("/cancel-invite")
     @Override
     public ResponseEntity<?> cancelInvite(User user,@RequestBody Map<String, Object> param) {
-        ParameterUtil.validation(String.valueOf(param.get("groupId")), ValidationType.EntityId, Long.class);
-        Long id = Long.valueOf(String.valueOf(param.get("groupId")));
+        Long id = ParameterUtil.validationAndConvert(param.get("groupId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
         return ResponseEntity.ok(groupService.cancelInvite(user.getUsername(), id));
     }
 
     @GetMapping("/{option:allow|deny}-invite")
     @Override
     public ResponseEntity<?> processInvite(@AuthenticationPrincipal User user, @PathVariable("option") ProcessOption option, @RequestBody Map<String, Object> param) {
-        ParameterUtil.validation(String.valueOf(param.get("groupId")), ValidationType.EntityId, Long.class);
-        Long id = Long.valueOf(String.valueOf(param.get("groupId")));
+        Long id = ParameterUtil.validationAndConvert(param.get("groupId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
         return ResponseEntity.ok(groupService.processInvite(user.getUsername(), id, option.isAllow()));
     }
 

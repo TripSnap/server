@@ -34,8 +34,7 @@ public class JoinController implements JoinApi {
     @PostMapping("/check-email")
     @Override
     public ResponseEntity<?> checkEmail(@RequestBody Map<String, Object> param) {
-        String email = String.valueOf(param.get("email"));
-        ParameterUtil.validation(email, ValidationType.Email);
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
         return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.checkEmail(email)));
     }
 

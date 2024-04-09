@@ -35,32 +35,28 @@ public class FriendController implements FriendApi {
     @PostMapping("/search")
     @Override
     public ResponseEntity<?> search(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
-        String email = String.valueOf(param.get("email"));
-        ParameterUtil.validation(email, ValidationType.Email);
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
         return ResponseEntity.ok(friendService.searchMember(user.getUsername(), email));
     }
 
     @PostMapping("/send-request")
     @Override
     public ResponseEntity<?> sendRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
-        String email = String.valueOf(param.get("email"));
-        ParameterUtil.validation(email, ValidationType.Email);
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
         return ResponseEntity.ok(friendService.sendRequest(user.getUsername(), email));
     }
 
     @PostMapping("/{option:allow|deny}-request")
     @Override
     public ResponseEntity<?> processRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param, @PathVariable("option") ProcessOption option) {
-        String email = String.valueOf(param.get("email"));
-        ParameterUtil.validation(email, ValidationType.Email);
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
         return ResponseEntity.ok(friendService.processFriendRequest(user.getUsername(), email, option.isAllow()));
     }
 
     @DeleteMapping
     @Override
     public ResponseEntity<?> remove(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
-        String email = String.valueOf(param.get("email"));
-        ParameterUtil.validation(email, ValidationType.Email);
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
         return ResponseEntity.ok(friendService.removeFriend(user.getUsername(), email));
     }
 }
