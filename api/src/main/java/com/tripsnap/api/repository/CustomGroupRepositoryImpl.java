@@ -1,9 +1,7 @@
 package com.tripsnap.api.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
 import com.tripsnap.api.domain.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CustomGroupRepositoryImpl implements CustomGroupRepository {
     @PersistenceContext
@@ -66,37 +65,27 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
         return members;
     }
 
-    // 앨범 목록을 가져온다
+    @Transactional
     @Override
-    public List<GroupAlbum> getGroupAlbumsByGroupId(Pageable pageable, Long groupId) {
-        QGroupAlbum groupAlbum = QGroupAlbum.groupAlbum;
-        QMember member = QMember.member;
-
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        List<Tuple> tupleList = queryFactory.select(groupAlbum, member).from(groupAlbum)
-                .leftJoin(member).on(groupAlbum.groupId.eq(groupId), groupAlbum.memberId.eq(member.id))
-                .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
-
-        return tupleList.stream().map(tuple -> {
-            GroupAlbum album = tuple.get(groupAlbum);
-            album.setMember(tuple.get(member));
-            return album;
-        }).toList();
+    public void updateGroupOwner(Group group) {
+        Optional<GroupMember> optionalGroupMember = getSuccessor(group);
+        if(optionalGroupMember.isPresent()) {
+            GroupMember successor = optionalGroupMember.get();
+            if(!successor.getMember().equals(group.getOwner())) {
+                QGroup qGroup = QGroup.group;
+                JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+                queryFactory.update(qGroup).set(qGroup.owner, successor.getMember())
+                        .where(qGroup.id.eq(group.getId())).execute();
+            }
+        }
     }
 
-    @Override
-    public List<AlbumPhoto> getPhotosByAlbumId(Pageable pageable, Long albumId) {
-        return null;
-    }
-
-    @Override
-    public void insertPhotosToAlbum(GroupAlbum album, List<AlbumPhotoInsDTO> photos) {
-        QAlbumPhoto albumPhoto = QAlbumPhoto.albumPhoto;
-
-        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        // TODO: 개선이 필요
-        photos.forEach(photoDTO -> {
-            queryFactory.insert(albumPhoto).set(albumPhoto.groupAlbum, album).set(albumPhoto.photo, photoDTO.photo()).execute();
-        });
+    private Optional<GroupMember> getSuccessor(Group group) {
+        QGroupMember groupMember = QGroupMember.groupMember;
+        JPAQuery<GroupMember> query = new JPAQuery<>(em);
+        GroupMember member = query.select(groupMember).from(groupMember)
+                .where(groupMember.group.eq(group)).orderBy(groupMember.createdAt.asc())
+                .offset(1).limit(1).fetchFirst();
+        return Optional.ofNullable(member);
     }
 }

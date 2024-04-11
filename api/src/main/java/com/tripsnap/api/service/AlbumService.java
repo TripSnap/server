@@ -8,7 +8,6 @@ import com.tripsnap.api.domain.mapstruct.GroupAlbumMapper;
 import com.tripsnap.api.exception.ServiceException;
 import com.tripsnap.api.repository.AlbumPhotoRepository;
 import com.tripsnap.api.repository.GroupAlbumRepository;
-import com.tripsnap.api.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AlbumService {
-    private final GroupRepository groupRepository;
     private final GroupAlbumRepository groupAlbumRepository;
     private final AlbumPhotoRepository albumPhotoRepository;
 
@@ -31,7 +29,7 @@ public class AlbumService {
         Member member = permissionCheckService.getMember(email);
         permissionCheckService.checkGroupMember(groupId, member.getId());
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
-        List<GroupAlbum> groupAlbums = groupRepository.getGroupAlbumsByGroupId(pageable, groupId);
+        List<GroupAlbum> groupAlbums = groupAlbumRepository.getGroupAlbumsByGroupId(pageable, groupId);
         return ResultDTO.WithPageData(pageable, groupAlbumMapper.toDTOList(groupAlbums));
     }
 
@@ -42,7 +40,7 @@ public class AlbumService {
         // TODO: 사진 갯수 체크 필요
         GroupAlbum groupAlbumEntity = groupAlbumMapper.toGroupAlbumEntity(param, member.getId());
         groupAlbumEntity = groupAlbumRepository.save(groupAlbumEntity);
-        groupRepository.insertPhotosToAlbum(groupAlbumEntity, param.albumPhotoList());
+        groupAlbumRepository.insertPhotosToAlbum(groupAlbumEntity, param.albumPhotoList());
         return ResultDTO.SuccessOrNot(true, null);
     }
 
@@ -65,11 +63,11 @@ public class AlbumService {
     public ResultDTO.SimpleWithPageData<List<AlbumPhotoDTO>> getPhotos(String email, PageDTO pageDTO, GroupAlbumParamDTO paramDTO) {
         Member member = permissionCheckService.getMember(email);
         permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
-        permissionCheckService.checkGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
+        GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
 
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
 
-        List<AlbumPhoto> photos = groupRepository.getPhotosByAlbumId(pageable, paramDTO.getAlbumId());
+        List<AlbumPhoto> photos = groupAlbumRepository.getPhotosByAlbumId(pageable, groupAlbum);
         return ResultDTO.WithPageData(pageable, groupAlbumMapper.toAlbumDTOList(photos));
     }
 
@@ -79,7 +77,7 @@ public class AlbumService {
         permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
         GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
 
-        groupRepository.insertPhotosToAlbum(groupAlbum, photos);
+        groupAlbumRepository.insertPhotosToAlbum(groupAlbum, photos);
 
         return ResultDTO.SuccessOrNot(true);
     }

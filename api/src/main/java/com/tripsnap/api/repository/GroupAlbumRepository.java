@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface GroupAlbumRepository extends JpaRepository<GroupAlbum, Long> {
+public interface GroupAlbumRepository extends JpaRepository<GroupAlbum, Long>,CustomGroupAlbumRepository {
     void deleteById(Long id);
     Optional<GroupAlbum> getGroupAlbumById(Long id);
 }
