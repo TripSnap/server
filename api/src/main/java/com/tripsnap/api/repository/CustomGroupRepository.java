@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface CustomGroupRepository {
     List<Group> getGroupsByMemberId(Pageable pageable, Long memberId);
+    List<Group> getGroupsByMemberId(Long memberId);
     List<Member> getGroupMembersByGroupId(Pageable pageable, Long groupId);
     List<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId);
 

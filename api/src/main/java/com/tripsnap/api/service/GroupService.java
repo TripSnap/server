@@ -85,23 +85,29 @@ public class GroupService {
 
         if(optionalGroup.isPresent()) {
             Group group = optionalGroup.get();
-            int memberCount = groupMemberRepository.countByGroupId(group.getId());
-            if(memberCount > 1) {
-                if(permissionCheckService.isGroupOwner(group, member)) {
-                    groupRepository.updateGroupOwner(group);
-                }
-                groupAlbumRepository.updateAlbumAndPhotoForLeave(group.getId(), member.getId());
-                groupMemberRepository.removeById(GroupMemberId.builder().groupId(group.getId()).memberId(member.getId()).build());
-            } else {
-                // 그룹 회원이 한명일 때
-                groupRepository.removeGroupByIdAndOwnerId(groupId, member.getId());
-            }
-
-            return ResultDTO.SuccessOrNot(true);
+            return leaveGroup(member, group);
         } else {
             throw ServiceException.BadRequestException();
         }
     }
+
+    @Transactional
+    public ResultDTO.SimpleSuccessOrNot leaveGroup(Member member, Group group) {
+        int memberCount = groupMemberRepository.countByGroupId(group.getId());
+        if(memberCount > 1) {
+            if(permissionCheckService.isGroupOwner(group, member)) {
+                groupRepository.updateGroupOwner(group);
+            }
+            groupAlbumRepository.updateAlbumAndPhotoForLeave(group.getId(), member.getId());
+            groupMemberRepository.removeById(GroupMemberId.builder().groupId(group.getId()).memberId(member.getId()).build());
+        } else {
+            // 그룹 회원이 한명일 때
+            groupRepository.removeGroupByIdAndOwnerId(group.getId(), member.getId());
+        }
+
+        return ResultDTO.SuccessOrNot(true);
+    }
+
 
     // 그룹 멤버 리스트
     public ResultDTO.SimpleWithPageData<List<MemberDTO>> getMemberList(String email, Long groupId, PageDTO pageDTO) {

@@ -23,12 +23,22 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
         QGroup group = QGroup.group;
 
         JPAQuery<GroupMember> query = new JPAQuery<>(em);
-        List<Group> groups = query.select(group).from(groupMember)
+        JPAQuery<Group> selectQuery = query.select(group).from(groupMember)
                 .innerJoin(group)
-                .on(groupMember.id.memberId.eq(memberId), groupMember.id.groupId.eq(group.id))
-                .offset(pageable.getOffset()).limit(pageable.getPageSize())
-                .fetch();
+                .on(groupMember.id.memberId.eq(memberId), groupMember.id.groupId.eq(group.id));
+
+        if(pageable != null) {
+            selectQuery = selectQuery.offset(pageable.getOffset()).limit(pageable.getPageSize());
+        }
+        List<Group> groups = selectQuery.fetch();
+
         return groups;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Group> getGroupsByMemberId(Long memberId) {
+        return getGroupsByMemberId(null, memberId);
     }
 
     // 그룹의 멤버들을 가져온다

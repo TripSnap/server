@@ -1,9 +1,11 @@
 package com.tripsnap.api.repository;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tripsnap.api.domain.entity.Friend;
 import com.tripsnap.api.domain.entity.QFriend;
+import com.tripsnap.api.domain.entity.QFriendRequest;
 import com.tripsnap.api.domain.entity.QMember;
 import com.tripsnap.api.domain.entity.key.MemberFriendId;
 import jakarta.persistence.EntityManager;
@@ -59,5 +61,27 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
         queryFactory.delete(friend).where(friend.id.memberId.eq(friendId), friend.id.friendId.eq(memberId)).execute();
 
         return true;
+    }
+
+    @Override
+    public void removeFriendAndRequestAll(long memberId) {
+        QFriend friend = QFriend.friend;
+        QFriendRequest friendRequest = QFriendRequest.friendRequest;
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        queryFactory.delete(friend).where(
+                // 1) friend_id column 이 {memberId}인 데이터 (상대방 데이터)
+                friend.id.memberId.in(
+                        // member의 friend_id 가져옴
+                        JPAExpressions
+                                .select(friend.id.friendId).from(friend)
+                                .where(friend.id.memberId.eq(memberId))
+                        )
+                        .and(friend.id.friendId.eq(memberId))
+
+//                        2) member_id column 이 {memberId}인 데이터
+                    .or(friend.id.memberId.eq(memberId))
+        );
+
     }
 }

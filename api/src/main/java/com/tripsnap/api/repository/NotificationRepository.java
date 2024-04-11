@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long>, CustomNotificationRepository {
     void deleteByMemberIdAndIdIn(Long memberId, List<Long> ids);
+    void deleteAllByMemberId(Long memberId);
 }
