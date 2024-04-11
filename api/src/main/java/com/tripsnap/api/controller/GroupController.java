@@ -54,7 +54,7 @@ public class GroupController implements GroupApi {
     @Override
     public ResponseEntity<?> leaveGroup(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         Long id = ParameterUtil.validationAndConvert(param.get("groupId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
-        return null;
+        return ResponseEntity.ok(groupService.leaveGroup(user.getUsername(), id));
     }
 
     @PostMapping("/cancel-invite")

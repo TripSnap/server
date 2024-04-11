@@ -15,6 +15,7 @@ public class AlbumPhoto extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="album_photo_id")
     private Long id;
+    private Long memberId;
     @ManyToOne
     @JoinColumn(name = "album_id")
     private GroupAlbum groupAlbum;

@@ -6,10 +6,8 @@ import com.tripsnap.api.domain.entity.*;
 import com.tripsnap.api.domain.entity.key.GroupMemberId;
 import com.tripsnap.api.domain.mapstruct.GroupMapper;
 import com.tripsnap.api.domain.mapstruct.MemberMapper;
-import com.tripsnap.api.repository.FriendRepository;
-import com.tripsnap.api.repository.GroupMemberRepository;
-import com.tripsnap.api.repository.GroupMemberRequestRepository;
-import com.tripsnap.api.repository.GroupRepository;
+import com.tripsnap.api.exception.ServiceException;
+import com.tripsnap.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,8 @@ public class GroupService {
     private final FriendRepository friendRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRequestRepository groupMemberRequestRepository;
+    private final GroupAlbumRepository groupAlbumRepository;
+
     private final PermissionCheckService permissionCheckService;
 
     private final GroupMapper groupMapper;
@@ -70,9 +70,37 @@ public class GroupService {
     // 그룹 삭제
     @Transactional
     public ResultDTO.SimpleSuccessOrNot deleteGroup(String email, Long groupId) {
+        // TODO: cascade 확인 필요
         Member member = permissionCheckService.getMember(email);
         groupRepository.removeGroupByIdAndOwnerId(groupId, member.getId());
         return ResultDTO.SuccessOrNot(true);
+    }
+
+    // 그룹 탈퇴
+    @Transactional
+    public ResultDTO.SimpleSuccessOrNot leaveGroup(String email, Long groupId) {
+        Member member = permissionCheckService.getMember(email);
+        permissionCheckService.checkGroupMember(member.getId(), groupId);
+        Optional<Group> optionalGroup = groupRepository.findGroupById(groupId);
+
+        if(optionalGroup.isPresent()) {
+            Group group = optionalGroup.get();
+            int memberCount = groupMemberRepository.countByGroupId(group.getId());
+            if(memberCount > 1) {
+                if(permissionCheckService.isGroupOwner(group, member)) {
+                    groupRepository.updateGroupOwner(group);
+                }
+                groupAlbumRepository.updateAlbumAndPhotoForLeave(group.getId(), member.getId());
+                groupMemberRepository.removeById(GroupMemberId.builder().groupId(group.getId()).memberId(member.getId()).build());
+            } else {
+                // 그룹 회원이 한명일 때
+                groupRepository.removeGroupByIdAndOwnerId(groupId, member.getId());
+            }
+
+            return ResultDTO.SuccessOrNot(true);
+        } else {
+            throw ServiceException.BadRequestException();
+        }
     }
 
     // 그룹 멤버 리스트

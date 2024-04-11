@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId> {
     Optional<GroupMember> findGroupMemberById(GroupMemberId id);
+    int countByGroupId(Long groupId);
+    void removeById(GroupMemberId id);
 }
