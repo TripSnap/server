@@ -131,10 +131,19 @@ public class GroupService {
 
     // 초대 취소
     @Transactional
-    public ResultDTO.SimpleSuccessOrNot cancelInvite(String email, Long groupId) {
+    public ResultDTO.SimpleSuccessOrNot cancelInvite(String email, Long groupId, Long requestMemberId) {
         Member member = permissionCheckService.getMember(email);
-        GroupMemberId id = GroupMemberId.builder().groupId(groupId).memberId(member.getId()).build();
-        groupMemberRequestRepository.deleteById(id);
+        Optional<Group> optionalGroup = groupRepository.findGroupById(groupId);
+        optionalGroup.ifPresentOrElse(group -> {
+            if(permissionCheckService.isGroupOwner(group, member)) {
+                GroupMemberId id = GroupMemberId.builder().groupId(groupId).memberId(requestMemberId).build();
+                groupMemberRequestRepository.deleteById(id);
+            } else {
+                throw ServiceException.PermissionDenied();
+            }
+        }, () -> {
+            throw ServiceException.BadRequestException();
+        });
         return ResultDTO.SuccessOrNot(true);
     }
 

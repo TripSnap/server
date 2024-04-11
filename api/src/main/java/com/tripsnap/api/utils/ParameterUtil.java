@@ -104,4 +104,8 @@ public class ParameterUtil {
         }
     }
 
+    public static <T> void validation(T value, ValidationType.PrimitiveWrapper validationType) {
+        validationAndConvert(value, validationType);
+    }
+
 }

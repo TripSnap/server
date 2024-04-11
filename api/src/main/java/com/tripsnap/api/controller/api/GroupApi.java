@@ -8,6 +8,8 @@ import com.tripsnap.api.domain.dto.ResultDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,15 +37,24 @@ public interface GroupApi {
     ResponseEntity<?> removeGroup(User user, Long groupId);
 
     @Operation(summary = "그룹 멤버 리스트")
+    @RequestBody(content = @Content(schemaProperties = {
+            @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class))
+    }))
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> groupMembers(User user, Map<String, Object> param);
 
     @Operation(summary = "그룹 탈퇴")
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
-    ResponseEntity<?> leaveGroup(User user, Map<String, Object> param);
+    ResponseEntity<?> leaveGroup(User user, Long groupId);
 
     @Operation(summary = "그룹 초대 취소")
+    @RequestBody(content = @Content(schemaProperties = {
+            @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="memberId", schema = @Schema(implementation = Long.class))
+    }))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> cancelInvite(User user, Map<String, Object> param);
@@ -51,5 +62,5 @@ public interface GroupApi {
     @Operation(summary = "그룹 초대 수락 및 거절")
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class)))
-    ResponseEntity<?> processInvite(User user, ProcessOption invite, Map<String, Object> param);
+    ResponseEntity<?> processInvite(User user, ProcessOption invite, Long groupId);
 }
