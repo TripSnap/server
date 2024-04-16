@@ -2,6 +2,8 @@ package com.tripsnap.api.config;
 
 
 import com.tripsnap.api.openapi.CustomOpenAPI;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,13 @@ import java.util.List;
         havingValue = "true"
 )
 @Configuration
+@SecurityScheme(
+        name = "Authorization",
+        description = "Bearer {jwt token}",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
 public class SwaggerConfig {
 
     @Autowired
@@ -66,8 +75,11 @@ public class SwaggerConfig {
 
         CustomOpenAPI.Decorator
                 .get().pathname("/logout").tag("auth").summary("로그아웃")
-//                .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
+                .securityToken("Authorization")
                 .response("200", "successful operation")
+                .response("401", "access token 만료")
+                .response("401 ", "로그인 필요")
+                .response("403", "권한에 맞지 않는 접근")
                 .set(openAPI);
 
         return openAPI;

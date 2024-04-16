@@ -1,5 +1,6 @@
 package com.tripsnap.api.openapi;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
@@ -26,6 +28,7 @@ public class CustomOpenAPI {
     private BiConsumer<OpenAPI, CustomOpenAPI> function;
     private String tag;
     private String summary;
+    private Components components;
 
     public static class Decorator {
         private CustomOpenAPI api;
@@ -70,6 +73,17 @@ public class CustomOpenAPI {
             return this;
         }
 
+        public Decorator securityToken(String name) {
+            if(api.components == null ) {
+                api.components = new Components();
+            }
+            api.components.addSecuritySchemes(name,
+                    new SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("bearer").bearerFormat("JWT")
+            );
+            return this;
+        }
 
         public Decorator requestBody(List<Tuple2<String, String>> paramList) {
             api.requestBody= new RequestBody().content(this.content(paramList));
