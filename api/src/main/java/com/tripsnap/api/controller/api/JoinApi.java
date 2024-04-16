@@ -17,7 +17,8 @@ import java.util.Map;
 
 @Tag(name="join", description = "회원가입, 계정찾기 등")
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "400", description = "Invalid status value",content = @Content())
+        @ApiResponse(responseCode = "400", description = "Invalid status value",content = @Content()),
+        @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface JoinApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
