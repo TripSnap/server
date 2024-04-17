@@ -1,14 +1,15 @@
 package com.tripsnap.api.config;
 
 import com.tripsnap.api.auth.JWTFilter;
-import com.tripsnap.api.auth.Roles;
 import com.tripsnap.api.auth.exception.AuthenticationExceptionHandler;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.auth.login.LoginSuccessHandler;
 import com.tripsnap.api.auth.login.LoginUserDetailsService;
 import com.tripsnap.api.auth.logout.JWTLogoutHandler;
 import com.tripsnap.api.auth.logout.JWTLogoutSuccessHandler;
+import com.tripsnap.api.filter.ServiceExceptionHandlingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,13 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.List;
 
 import static jakarta.servlet.DispatcherType.ERROR;
 
@@ -34,6 +41,9 @@ import static jakarta.servlet.DispatcherType.ERROR;
 public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityFilterChain, HttpSecurity> {
     @Autowired
     ApplicationContext context;
+
+    @Value("${client.url}")
+    private String[] clientUrls;
 
     @Override
     public void init(HttpSecurity http) throws Exception {
@@ -44,19 +54,27 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
-                        .anyRequest().hasRole(Roles.USER)
+                                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+//                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
+//                        .anyRequest().hasRole(Roles.USER)
+                                .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf.disable())
                 .headers(header -> header.frameOptions(options -> options.sameOrigin()))
                 .addFilterBefore(jwtFilter(), AuthorizationFilter.class)
                 .addFilterAfter(loginFilter(providerManager()), AuthorizationFilter.class)
                 .addFilterAfter(logoutFilter(), AuthorizationFilter.class)
+                .addFilterBefore(serviceExceptionHandlingFilter(), LoginFilter.class)
                 .logout((logout) ->logout.disable())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new AuthenticationExceptionHandler()));
+    }
+
+    @Bean
+    private static ServiceExceptionHandlingFilter serviceExceptionHandlingFilter() {
+        return new ServiceExceptionHandlingFilter();
     }
 
     @Override

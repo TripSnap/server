@@ -1,5 +1,10 @@
 package com.tripsnap.api.auth.login;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.tripsnap.api.filter.MultiReadHttpServletRequest;
+import com.tripsnap.api.utils.ParameterUtil;
+import com.tripsnap.api.utils.ValidationType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,26 +17,33 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Map;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     public LoginFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
     }
 
-    public static final String FORM_USERNAME_ATTR_NAME = "email";
+    private final Gson gson = new Gson();
 
-    public static final String FORM_PASSWORD_ATTR_NAME = "password";
+    private final String FORM_USERNAME_ATTR_NAME = "email";
+    private final String FORM_PASSWORD_ATTR_NAME = "password";
+    private final String[] allowMethods = {HttpMethod.POST.name(), HttpMethod.OPTIONS.name()};
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        if (!HttpMethod.POST.matches(request.getMethod())) {
+        MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(request);
+
+        if (!checkMethod(request.getMethod())) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
-        String username = obtainUsername(request);
-        username = (username != null) ? username.trim() : "";
-        String password = obtainPassword(request);
-        password = (password != null) ? password : "";
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
+
+        Map<String, Object> map = gson.fromJson(multiReadRequest.getBodyJson(), new TypeToken<Map<String, Object>>(){}.getType());
+        String email = ParameterUtil.validationAndConvert(map.get(FORM_USERNAME_ATTR_NAME), ValidationType.PrimitiveWrapper.Email);
+        String password = ParameterUtil.validationAndConvert(map.get(FORM_PASSWORD_ATTR_NAME), ValidationType.PrimitiveWrapper.Password);
+
+        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(email,
                 password);
         // Allow subclasses to set the "details" property
 //        setDetails(request, authRequest);
@@ -46,6 +58,10 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Nullable
     protected String obtainUsername(HttpServletRequest request) {
         return request.getParameter(FORM_USERNAME_ATTR_NAME);
+    }
+
+    private boolean checkMethod(String method) {
+        return Arrays.asList(allowMethods).contains(method);
     }
 
 }

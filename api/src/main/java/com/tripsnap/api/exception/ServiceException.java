@@ -1,7 +1,11 @@
 package com.tripsnap.api.exception;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServiceException extends RuntimeException{
     public ServiceException() {
@@ -23,4 +27,8 @@ public class ServiceException extends RuntimeException{
 
     @Getter
     private HttpStatus status;
+
+    @Getter
+    @Setter
+    private Map<String, Object> body = new HashMap<>();
 }
