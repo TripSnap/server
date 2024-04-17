@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -70,7 +71,13 @@ public class SwaggerConfig {
         CustomOpenAPI.Decorator
                 .post().pathname("/login").tag("auth").summary("로그인")
                 .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
-                .response("200", "successful operation")
+                .response("200", "successful operation",
+                        CustomOpenAPI.Decorator.header(List.of(
+                                Tuples.of(HttpHeaders.AUTHORIZATION, "access token"),
+                                Tuples.of("Refresh-Token", "refresh token")
+                        ))
+                )
+                .response("403", "권한에 맞지 않는 접근")
                 .set(openAPI);
 
         CustomOpenAPI.Decorator

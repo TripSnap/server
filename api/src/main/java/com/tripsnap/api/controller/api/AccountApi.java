@@ -22,8 +22,8 @@ import java.util.Map;
 @Tag(name="account", description = "계정과 관련된 API")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "400", description = "Invalid status value",content = @Content()),
-        @ApiResponse(responseCode = "401", description = "access token 만료",content = @Content(), headers = @Header(name="WWW-Authenticate", description = "Refresh-Token")),
-        @ApiResponse(responseCode = "401 ", description = "로그인 필요",content = @Content(), headers = @Header(name="WWW-Authenticate", description = "Bearer")),
+        @ApiResponse(responseCode = "401", description = "access token 만료",content = @Content(), headers = @Header(name="WWW-Authenticate", description = "Refresh-Token", schema = @Schema(type = "string"))),
+        @ApiResponse(responseCode = "401 ", description = "로그인 필요",content = @Content(), headers = @Header(name="WWW-Authenticate", description = "Bearer", schema = @Schema(type = "string"))),
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface AccountApi {

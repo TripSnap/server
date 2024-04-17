@@ -22,7 +22,7 @@ import java.util.Map;
 })
 public interface JoinApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class)))
     @Operation(summary = "회원가입")
     ResponseEntity<?> join(JoinDTO param);
     
@@ -31,7 +31,7 @@ public interface JoinApi {
                     schemaProperties = {@SchemaProperty(name="email",schema = @Schema(implementation = String.class))}
             ))
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
+            content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class)))
     @Operation(summary = "이메일 중복체크")
     ResponseEntity<?> checkEmail( Map<String, Object> param);
     

@@ -4,9 +4,11 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -16,7 +18,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 import reactor.util.function.Tuple2;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -90,15 +94,18 @@ public class CustomOpenAPI {
             return this;
         }
 
-        public Decorator response(String code, String description ) {
-            return response(code, description, null);
+        public Decorator response(String code, String description) {
+            return response(code, description, null, null);
+        }
+        public Decorator response(String code, String description, Map<String,Header> headers ) {
+            return response(code, description, null, headers);
         }
 
         public Decorator response(String code, List<Tuple2<String, String>> paramList) {
-            return response(code, null, paramList);
+            return response(code, null, paramList,null);
         }
 
-        public Decorator response(String code, String description, List<Tuple2<String, String>> paramList) {
+        public Decorator response(String code, String description, List<Tuple2<String, String>> paramList, Map<String,Header> headers) {
             if(api.apiResponses == null) {
                 api.apiResponses = new ApiResponses();
             }
@@ -109,8 +116,20 @@ public class CustomOpenAPI {
             }
             response.setContent(content(paramList));
 
+            if(headers != null) {
+                response.setHeaders(headers);
+            }
+
             api.apiResponses.addApiResponse(code, response);
             return this;
+        }
+
+        public static Map<String,Header> header(List<Tuple2<String, String>> params) {
+            Map<String,Header> headers = new HashMap<>();
+            for(Tuple2<String, String> param: params) {
+                headers.put(param.getT1(), new Header().description(param.getT2()).schema(new StringSchema()));
+            }
+            return headers;
         }
 
         private Content content(List<Tuple2<String, String>> paramList) {
