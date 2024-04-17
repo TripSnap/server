@@ -3,6 +3,7 @@ package com.tripsnap.api.config;
 import com.tripsnap.api.auth.JWTFilter;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.convertor.StringToProcessOptionConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,6 +20,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 public class AppConfig implements WebMvcConfigurer {
+    @Value("${client.url}")
+    private String[] clientUrls;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry
+                .addMapping("/**")
+                .allowedHeaders("*")
+                .allowedOrigins(clientUrls)
+                .allowedMethods("*");
+    }
+
     @Bean
     public FilterRegistrationBean<LoginFilter> loginFilterRegistration(LoginFilter filter) {
         FilterRegistrationBean<LoginFilter> registration = new FilterRegistrationBean<>(filter);
