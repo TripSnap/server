@@ -1,6 +1,7 @@
 package com.tripsnap.api.config;
 
 import com.tripsnap.api.auth.JWTFilter;
+import com.tripsnap.api.auth.Roles;
 import com.tripsnap.api.auth.exception.AuthenticationExceptionHandler;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.auth.login.LoginSuccessHandler;
@@ -54,10 +55,9 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
-                                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-//                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
-//                        .anyRequest().hasRole(Roles.USER)
-                                .anyRequest().permitAll()
+                        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
+                        .anyRequest().hasRole(Roles.USER)
                 )
                 .csrf(csrf -> csrf.disable())
                 .headers(header -> header.frameOptions(options -> options.sameOrigin()))
@@ -122,4 +122,18 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
         return new JWTFilter();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of(clientUrls));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
