@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,8 +25,9 @@ public class LoginUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            Member member = memberRepository.findByEmail(username);
-            if(member != null) {
+            Optional<Member> optMember = memberRepository.findByEmail(username);
+            if(optMember.isPresent()) {
+                Member member = optMember.get();
                 User user = new User(member.getEmail(), member.getPassword(), List.of(new SimpleGrantedAuthority(Roles.USER)));
                 return user;
             } else {

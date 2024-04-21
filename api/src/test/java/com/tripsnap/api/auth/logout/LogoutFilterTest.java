@@ -11,6 +11,7 @@ import com.tripsnap.api.auth.redis.RedisTestConfig;
 import com.tripsnap.api.auth.redis.RefreshTokenRepository;
 import com.tripsnap.api.auth.vo.DecryptedToken;
 import com.tripsnap.api.config.AppConfig;
+import com.tripsnap.api.config.CommonSecurityConfig;
 import com.tripsnap.api.config.SecurityConfig;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("로그아웃 필터 테스트")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SecurityConfig.class, AppConfig.class, RedisTestConfig.class})
+@ContextConfiguration(classes = {CommonSecurityConfig.class, SecurityConfig.class, AppConfig.class, RedisTestConfig.class})
 @WebAppConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import({TokenService.class, JWTLogoutHandler.class})

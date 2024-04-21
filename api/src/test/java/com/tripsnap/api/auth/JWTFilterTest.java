@@ -10,6 +10,7 @@ import com.tripsnap.api.auth.redis.RedisTestConfig;
 import com.tripsnap.api.auth.redis.RefreshToken;
 import com.tripsnap.api.auth.redis.RefreshTokenRepository;
 import com.tripsnap.api.config.AppConfig;
+import com.tripsnap.api.config.CommonSecurityConfig;
 import com.tripsnap.api.config.SecurityConfig;
 import com.tripsnap.api.controller.AuthController;
 import com.tripsnap.api.utils.TimeUtil;
@@ -49,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("JWT 필터 테스트")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {SecurityConfig.class, AppConfig.class, RedisTestConfig.class})
+@ContextConfiguration(classes = {CommonSecurityConfig.class, SecurityConfig.class,  AppConfig.class, RedisTestConfig.class})
 @WebAppConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Import({TokenService.class, JWTFilterTest.TestController.class, AuthController.class})

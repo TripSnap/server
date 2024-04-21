@@ -3,13 +3,12 @@ package com.tripsnap.api.domain.entity;
 
 import com.tripsnap.api.domain.entity.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Entity
 public class TemporaryMember extends BaseEntity {
     @Id
@@ -22,6 +21,8 @@ public class TemporaryMember extends BaseEntity {
     private String password;
     @Column(nullable = false)
     private String nickname;
+
+    @Setter
     @Column(nullable = false)
     private String token;
 }
