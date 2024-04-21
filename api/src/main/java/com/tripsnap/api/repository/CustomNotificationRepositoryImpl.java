@@ -7,6 +7,7 @@ import com.tripsnap.api.domain.entity.QNotification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         return notifications;
     }
 
+    @Transactional
     @Override
     public void readNotification(Long memberId) {
         QNotification notification = QNotification.notification;
