@@ -34,7 +34,7 @@ public class TokenService {
     private final int REFRESH_TOKEN_TIME = 60 * 60 * 24;
 
     public void setAccessTokenToResponse(String token, HttpServletResponse response) {
-        response.setHeader(HttpHeaders.AUTHORIZATION,TOKEN_TYPE+token);
+        response.setHeader(HttpHeaders.AUTHORIZATION,token);
     }
     public void setRefreshTokenToResponse(String token, HttpServletResponse response) {
         response.setHeader("Refresh-Token",token);

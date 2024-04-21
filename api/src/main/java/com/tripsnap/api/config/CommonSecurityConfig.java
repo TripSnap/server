@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -130,7 +131,7 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
         config.setAllowedOrigins(List.of(clientUrls));
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of(HttpHeaders.AUTHORIZATION,HttpHeaders.WWW_AUTHENTICATE, "Refresh-Token"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

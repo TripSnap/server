@@ -3,6 +3,7 @@ package com.tripsnap.api.auth.login;
 import com.tripsnap.api.auth.vo.TokenData;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 
@@ -13,7 +14,8 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 
     public JWTAuthenticationToken(TokenData tokenData) {
         super(List.of(new SimpleGrantedAuthority(tokenData.role())));
-        this.email = tokenData.email();
+        setDetails(User.builder().username(tokenData.email()).password(tokenData.email()).authorities(this.getAuthorities()).build());
+        ((User)getDetails()).eraseCredentials();
         setAuthenticated(true);
     }
 
@@ -24,6 +26,6 @@ public class JWTAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return email;
+        return super.getDetails();
     }
 }
