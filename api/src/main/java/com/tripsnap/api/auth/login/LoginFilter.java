@@ -41,7 +41,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
         Map<String, Object> map = gson.fromJson(multiReadRequest.getBodyJson(), new TypeToken<Map<String, Object>>(){}.getType());
         String email = ParameterUtil.validationAndConvert(map.get(FORM_USERNAME_ATTR_NAME), ValidationType.PrimitiveWrapper.Email);
-        String password = ParameterUtil.validationAndConvert(map.get(FORM_PASSWORD_ATTR_NAME), ValidationType.PrimitiveWrapper.Password);
+        String password = ParameterUtil.validationAndConvert(map.get(FORM_PASSWORD_ATTR_NAME), ValidationType.PrimitiveWrapper.LoginPassword);
 
         UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(email,
                 password);

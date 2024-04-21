@@ -3,6 +3,7 @@ package com.tripsnap.api.config;
 import com.tripsnap.api.auth.JWTFilter;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.convertor.StringToProcessOptionConverter;
+import com.tripsnap.api.filter.ServiceExceptionHandlingFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,7 +31,8 @@ public class AppConfig implements WebMvcConfigurer {
                 .addMapping("/**")
                 .allowedHeaders("*")
                 .allowedOrigins(clientUrls)
-                .allowedMethods("*");
+                .allowedMethods("*")
+                .allowCredentials(true);
     }
 
     @Bean
@@ -41,6 +44,18 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<JWTFilter> jwtFilterRegistration(JWTFilter filter) {
         FilterRegistrationBean<JWTFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+    @Bean
+    public FilterRegistrationBean<LogoutFilter> logoutFilterRegistration(LogoutFilter filter) {
+        FilterRegistrationBean<LogoutFilter> registration = new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+    @Bean
+    public FilterRegistrationBean<ServiceExceptionHandlingFilter> serviceExceptionHandlingFilterRegistration(ServiceExceptionHandlingFilter filter) {
+        FilterRegistrationBean<ServiceExceptionHandlingFilter> registration = new FilterRegistrationBean<>(filter);
         registration.setEnabled(false);
         return registration;
     }

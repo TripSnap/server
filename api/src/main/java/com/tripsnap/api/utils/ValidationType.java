@@ -1,7 +1,6 @@
 package com.tripsnap.api.utils;
 
 import com.google.gson.reflect.TypeToken;
-import com.tripsnap.api.domain.Regexp;
 import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
 import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,7 @@ public enum ValidationType {
 
     public enum PrimitiveWrapper {
         Email(EmailType.class),
-        Password(PasswordType.class),
+        LoginPassword(LoginPasswordType.class),
         EntityId(EntityIdType.class);
 
         public final Class<?> _class;
@@ -44,12 +43,21 @@ public enum ValidationType {
     private static class EmailType{
         @Email
         final private String value;
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
     };
 
     @RequiredArgsConstructor
-    private static class PasswordType {
-        @Pattern(regexp = Regexp.PASSWORD)
+    private static class LoginPasswordType {
+        @Size(min=1, max=100) @NotBlank
         final private String password;
+        @Override
+        public String toString() {
+            return this.password;
+        }
     }
 
 
@@ -57,6 +65,10 @@ public enum ValidationType {
     private static class EntityIdType {
         @Positive @NotNull
         final private Long id;
+        @Override
+        public String toString() {
+            return String.valueOf(id);
+        }
     }
 
     @NoArgsConstructor
