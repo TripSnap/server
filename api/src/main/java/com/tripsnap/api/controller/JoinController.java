@@ -28,14 +28,14 @@ public class JoinController implements JoinApi {
     @PostMapping
     @Override
     public ResponseEntity<?> join(@Valid @RequestBody JoinDTO param) {
-        return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.join(param)));
+        return ResponseEntity.ok(joinService.join(param));
     }
 
     @PostMapping("/check-email")
     @Override
     public ResponseEntity<?> checkEmail(@RequestBody Map<String, Object> param) {
         String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
-        return ResponseEntity.ok(ResultDTO.SuccessOrNot(joinService.checkEmail(email)));
+        return ResponseEntity.ok(joinService.checkEmail(email));
     }
 
     @PostMapping("/verify-code")
