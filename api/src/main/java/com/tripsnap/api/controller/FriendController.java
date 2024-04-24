@@ -28,7 +28,7 @@ public class FriendController implements FriendApi {
 
     @GetMapping("/list")
     @Override
-    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @Valid @RequestParam PageDTO pageDTO) {
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @Valid PageDTO pageDTO) {
         return ResponseEntity.ok(friendService.getFriendList(user.getUsername(), pageDTO));
     }
 

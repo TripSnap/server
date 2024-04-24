@@ -12,10 +12,12 @@ import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.repository.FriendRepository;
 import com.tripsnap.api.repository.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,9 +33,34 @@ public class FriendService {
     public ResultDTO.SimpleWithPageData<List<MemberDTO>> getFriendList(String email, PageDTO pageDTO) {
         Member member = permissionCheckService.getMember(email);
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
-        List<Friend> friendEntities = friendRepository.findFriendsByMemberId(pageable, member.getId());
-        List<MemberDTO> friends = memberMapper.toMemberDTOList(friendEntities.stream().map(Friend::getMember).toList());
-        return ResultDTO.WithPageData(pageable, friends);
+        return ResultDTO.WithPageData(pageable, getAllFriendList(pageable, member.getId()));
+    }
+
+    /**
+     * 친구 신청 리스트와 친구 리스트를 합쳐서 가져온다.
+     * @param pageable
+     * @param memberId
+     * @return
+     */
+    private List<MemberDTO> getAllFriendList(Pageable pageable, long memberId) {
+        List<MemberDTO> friendMemberDTOs = new ArrayList<>();
+
+        Page<FriendRequest> friendRequestsPage = friendRepository.getFriendRequestsByMemberId(pageable, memberId);
+        var friendRequests = friendRequestsPage.getContent();
+
+        friendMemberDTOs.addAll(memberMapper.toWatingMemberDTOList(friendRequests.stream().map(FriendRequest::getMember).toList()));
+
+        // 리스트 앞부분의 친구 신청 때문에 값 보정
+        long page = pageable.getPageNumber() - friendRequestsPage.getTotalElements() / pageable.getPageSize();
+        if(page >= 0) {
+            long limit = friendRequests.isEmpty() ? pageable.getPageSize() : pageable.getPageSize() - friendRequests.size();
+            long offset = page == 0 ? 0 : (page*pageable.getPageSize()) - friendRequestsPage.getTotalElements() % pageable.getPageSize();
+
+            List<Friend> friends = friendRepository.getFriendsByMemberId(offset, limit, memberId);
+            friendMemberDTOs.addAll(memberMapper.toMemberDTOList(friends.stream().map(Friend::getMember).toList()));
+        }
+
+        return friendMemberDTOs;
     }
 
     // 친구 검색
