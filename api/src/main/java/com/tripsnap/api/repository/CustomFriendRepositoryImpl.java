@@ -98,7 +98,7 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
 
     @Transactional
     @Override
-    public Page<FriendRequest> getFriendRequestsByMemberId(Pageable pageable, Long memberId) {
+    public Page<FriendRequest> getFriendSendRequestsByMemberId(Pageable pageable, Long memberId) {
         QFriendRequest friendRequest = QFriendRequest.friendRequest;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
@@ -107,5 +107,26 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
         Long requestAllCount = queryFactory.select(friendRequest.count()).from(friendRequest).where(friendRequest.id.memberId.eq(memberId)).fetchOne();
 
         return new PageImpl<>(friendRequests, pageable, requestAllCount);
+    }
+
+    @Transactional
+    @Override
+    public Page<Member> getFriendReceiveRequestsByMemberId(Pageable pageable, Long memberId) {
+        QFriendRequest friendRequest = QFriendRequest.friendRequest;
+        QMember member = QMember.member;
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        Long requestAllCount = queryFactory.select(friendRequest.count()).from(friendRequest).where(friendRequest.id.friendId.eq(memberId)).fetchOne();
+        // memberId에게 온 친구 신청 리스트
+        List<FriendRequest> friendRequests = queryFactory.select(friendRequest).from(friendRequest).where(friendRequest.id.friendId.eq(memberId))
+                .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
+
+        // memberId에게 친구 신청 보낸 id 리스트
+        List<Long> userIds = friendRequests.stream().map(request -> request.getId().getMemberId()).toList();
+
+        List<Member> receiveMembers = queryFactory.select(member).from(member).where(member.id.in(userIds)).fetch();
+
+        return new PageImpl<>(receiveMembers, pageable, requestAllCount);
     }
 }

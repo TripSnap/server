@@ -11,6 +11,7 @@ import com.tripsnap.api.domain.entity.key.MemberFriendId;
 import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.repository.FriendRepository;
 import com.tripsnap.api.repository.FriendRequestRepository;
+import com.tripsnap.api.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class FriendService {
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
     private final PermissionCheckService permissionCheckService;
 
@@ -37,7 +39,7 @@ public class FriendService {
     }
 
     /**
-     * 친구 신청 리스트와 친구 리스트를 합쳐서 가져온다.
+     * 친구 신청 받은 리스트와 친구 리스트를 합쳐서 가져온다.
      * @param pageable
      * @param memberId
      * @return
@@ -45,10 +47,10 @@ public class FriendService {
     private List<MemberDTO> getAllFriendList(Pageable pageable, long memberId) {
         List<MemberDTO> friendMemberDTOs = new ArrayList<>();
 
-        Page<FriendRequest> friendRequestsPage = friendRepository.getFriendRequestsByMemberId(pageable, memberId);
+        Page<Member> friendRequestsPage = friendRepository.getFriendReceiveRequestsByMemberId(pageable, memberId);
         var friendRequests = friendRequestsPage.getContent();
 
-        friendMemberDTOs.addAll(memberMapper.toWatingMemberDTOList(friendRequests.stream().map(FriendRequest::getMember).toList()));
+        friendMemberDTOs.addAll(memberMapper.toWatingMemberDTOList(friendRequests));
 
         // 리스트 앞부분의 친구 신청 때문에 값 보정
         long page = pageable.getPageNumber() - friendRequestsPage.getTotalElements() / pageable.getPageSize();
@@ -65,14 +67,43 @@ public class FriendService {
 
     // 친구 검색
     public ResultDTO.SimpleWithData<SearchMemberDTO> searchMember(String email, String friendEmail) {
-        Member member = permissionCheckService.getMember(email);
-        Member searchMember = permissionCheckService.getMember(friendEmail);
+        SearchMemberDTO searchMemberDTO = null;
 
-        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(searchMember.getId()).build();
-        SearchMemberDTO searchMemberDTO = memberMapper.toSearchMemberDTO(searchMember);
+        if(!email.equals(friendEmail)) {
+            Member member = permissionCheckService.getMember(email);
+            Optional<Member> optSearchMember = memberRepository.findByEmail(friendEmail);
 
-        Optional<Friend> optFriend = friendRepository.findFriendById(memberFriendId);
-        searchMemberDTO.setIsFriend(optFriend.isPresent());
+            if(optSearchMember.isPresent()) {
+                Member searchMember = optSearchMember.get();
+                MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(searchMember.getId()).build();
+                searchMemberDTO = memberMapper.toSearchMemberDTO(searchMember);
+
+
+                boolean friendOption = false;
+
+                Optional<Friend> optFriend = friendRepository.findFriendById(memberFriendId);
+                if(optFriend.isPresent()) {
+                    searchMemberDTO.setIsFriend(true);
+                    friendOption = true;
+                }
+
+                if(!friendOption) {
+                    Optional<FriendRequest> sendRequest = friendRequestRepository.findFriendRequestById(memberFriendId);
+                    if(sendRequest.isPresent()) {
+                        searchMemberDTO.setIsSendRequest(true);
+                        friendOption = true;
+                    }
+                }
+
+                if(!friendOption) {
+                    MemberFriendId receiveRequestId = MemberFriendId.builder().memberId(searchMember.getId()).friendId(member.getId()).build();
+                    Optional<FriendRequest> receiveRequest = friendRequestRepository.findFriendRequestById(receiveRequestId);
+                    if(receiveRequest.isPresent()) {
+                        searchMemberDTO.setIsReceiveRequest(true);
+                    }
+                }
+            }
+        }
         return ResultDTO.WithData(searchMemberDTO);
     }
 

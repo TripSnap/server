@@ -16,8 +16,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public abstract class FriendBaseEntity extends BaseEntity {
     @EmbeddedId
-    protected MemberFriendId id;
+    private MemberFriendId id;
     @OneToOne(fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn(name = "friend_id")
-    protected Member member;
+    private Member member;
 }
