@@ -65,7 +65,7 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
                 .addFilterBefore(jwtFilter(), AuthorizationFilter.class)
                 .addFilterAfter(loginFilter(providerManager()), AuthorizationFilter.class)
                 .addFilterAfter(logoutFilter(), AuthorizationFilter.class)
-                .addFilterBefore(serviceExceptionHandlingFilter(), LoginFilter.class)
+                .addFilterBefore(serviceExceptionHandlingFilter(), JWTFilter.class)
                 .logout((logout) ->logout.disable())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

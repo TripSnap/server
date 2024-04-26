@@ -3,8 +3,8 @@ package com.tripsnap.api.controller.api;
 
 import com.tripsnap.api.domain.dto.GroupInsDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
-import com.tripsnap.api.domain.dto.ProcessOption;
 import com.tripsnap.api.domain.dto.ResultDTO;
+import com.tripsnap.api.domain.dto.option.ProcessOption;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -62,7 +62,6 @@ public class GroupService {
                         ).build())
                 .toList();
         group.setMemberRequests(groupMemberRequests);
-        groupRepository.save(group);
 
         return ResultDTO.SuccessOrNot(true);
     }

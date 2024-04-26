@@ -3,6 +3,7 @@ package com.tripsnap.api.controller;
 
 import com.tripsnap.api.controller.api.GroupApi;
 import com.tripsnap.api.domain.dto.*;
+import com.tripsnap.api.domain.dto.option.ProcessOption;
 import com.tripsnap.api.service.GroupService;
 import com.tripsnap.api.utils.ParameterUtil;
 import com.tripsnap.api.utils.ValidationType;
@@ -24,8 +25,8 @@ public class GroupController implements GroupApi {
     private final GroupService groupService;
 
     @Override
-    @GetMapping("/list")
-    public ResponseEntity<ResultDTO.SimpleWithPageData<List<GroupDTO>>> groups(@AuthenticationPrincipal User user, @Valid @RequestParam PageDTO param) {
+    @GetMapping(value = "/list", consumes = MediaType.ALL_VALUE)
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<GroupDTO>>> groups(@AuthenticationPrincipal User user, @Valid PageDTO param) {
         return ResponseEntity.ok(groupService.getGroupList(user.getUsername(), param));
     }
 

@@ -1,6 +1,6 @@
 package com.tripsnap.api.convertor;
 
-import com.tripsnap.api.domain.dto.ProcessOption;
+import com.tripsnap.api.domain.dto.option.ProcessOption;
 import org.springframework.format.Formatter;
 
 import java.text.ParseException;

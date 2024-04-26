@@ -1,4 +1,4 @@
-package com.tripsnap.api.domain.dto;
+package com.tripsnap.api.domain.dto.option;
 
 public enum ProcessOption {
     allow, deny;
