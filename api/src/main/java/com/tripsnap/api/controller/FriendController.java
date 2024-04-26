@@ -40,6 +40,12 @@ public class FriendController implements FriendApi {
         return null;
     }
 
+    @GetMapping("/send-request/list")
+    @Override
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendSendRequestList(@AuthenticationPrincipal User user, PageDTO param) {
+        return ResponseEntity.ok(friendService.getFriendRequestSendList(user.getUsername(), param));
+    }
+
     @PostMapping("/search")
     @Override
     public ResponseEntity<?> search(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {

@@ -86,6 +86,14 @@ public class FriendService {
         return friendMemberDTOs;
     }
 
+    public ResultDTO.SimpleWithPageData<List<MemberDTO>> getFriendRequestSendList(String email, PageDTO pageDTO) {
+        Member member = permissionCheckService.getMember(email);
+        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
+        Page<FriendRequest> requests = friendRepository.getFriendSendRequestsByMemberId(pageable, member.getId());
+        List<Member> members = requests.getContent().stream().map(FriendRequest::getMember).toList();
+        return ResultDTO.WithPageData(pageable, memberMapper.toMemberDTOList(members));
+    }
+
     // 친구 검색
     public ResultDTO.SimpleWithData<SearchMemberDTO> searchMember(String email, String friendEmail) {
         SearchMemberDTO searchMemberDTO = null;
