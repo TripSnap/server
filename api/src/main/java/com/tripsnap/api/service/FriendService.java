@@ -31,8 +31,29 @@ public class FriendService {
     private final MemberMapper memberMapper;
     private final PermissionCheckService permissionCheckService;
 
-    // 친구 목록
+
+    /**
+     * 친구 목록을 가져와 DTO로 변환하여 리턴한다.
+     * @param email
+     * @param pageDTO
+     * @return
+     */
     public ResultDTO.SimpleWithPageData<List<MemberDTO>> getFriendList(String email, PageDTO pageDTO) {
+        Member member = permissionCheckService.getMember(email);
+        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
+        List<Friend> friends = friendRepository.getFriendsByMemberId(pageable, member.getId());
+        List<MemberDTO> dtoList = memberMapper.toMemberDTOList(friends.stream().map(Friend::getMember).toList());
+        return ResultDTO.WithPageData(pageable, dtoList);
+    }
+
+    /**
+     * getAllFriendList 의 결과를 DTO로 변환하여 리턴한다.
+     * @param email
+     * @param pageDTO
+     * @return
+     */
+
+    public ResultDTO.SimpleWithPageData<List<MemberDTO>> getAllFriendList(String email, PageDTO pageDTO) {
         Member member = permissionCheckService.getMember(email);
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
         return ResultDTO.WithPageData(pageable, getAllFriendList(pageable, member.getId()));
@@ -126,15 +147,14 @@ public class FriendService {
         Member member = permissionCheckService.getMember(email);
         Member friend = permissionCheckService.getMember(friendEmail);
 
-        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(friend.getId()).build();
+        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(friend.getId()).friendId(member.getId()).build();
 
         Optional<FriendRequest> optionalFriendRequest = friendRequestRepository.findFriendRequestById(memberFriendId);
         if(optionalFriendRequest.isPresent()) {
-            MemberFriendId requestId = MemberFriendId.builder().memberId(friend.getId()).friendId(member.getId()).build();
             if(isAllow) {
                 friendRepository.createFriend(member.getId(), friend.getId());
             }
-            friendRequestRepository.deleteById(requestId);
+            friendRequestRepository.deleteById(memberFriendId);
 
             return ResultDTO.SuccessOrNot(true, null);
         }

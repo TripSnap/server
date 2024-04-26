@@ -4,12 +4,12 @@ package com.tripsnap.api.controller;
 import com.tripsnap.api.controller.api.FriendApi;
 import com.tripsnap.api.domain.dto.MemberDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
-import com.tripsnap.api.domain.dto.ProcessOption;
 import com.tripsnap.api.domain.dto.ResultDTO;
+import com.tripsnap.api.domain.dto.option.FriendListOption;
+import com.tripsnap.api.domain.dto.option.ProcessOption;
 import com.tripsnap.api.service.FriendService;
 import com.tripsnap.api.utils.ParameterUtil;
 import com.tripsnap.api.utils.ValidationType;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +28,16 @@ public class FriendController implements FriendApi {
 
     @GetMapping("/list")
     @Override
-    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @Valid PageDTO pageDTO) {
-        return ResponseEntity.ok(friendService.getFriendList(user.getUsername(), pageDTO));
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> friendList(@AuthenticationPrincipal User user, @RequestParam Map<String, Object> param) {
+        PageDTO pageDTO = ParameterUtil.validationAndConvert(param, PageDTO.class);
+        FriendListOption option = ParameterUtil.validationAndConvert(param.get("option"), ValidationType.PrimitiveWrapper.FriendListOptionType, FriendListOption.class);
+        if(option == FriendListOption.all) {
+            return ResponseEntity.ok(friendService.getAllFriendList(user.getUsername(), pageDTO));
+        }
+        if(option == FriendListOption.active) {
+            return ResponseEntity.ok(friendService.getFriendList(user.getUsername(), pageDTO));
+        }
+        return null;
     }
 
     @PostMapping("/search")
@@ -53,7 +61,7 @@ public class FriendController implements FriendApi {
         return ResponseEntity.ok(friendService.processFriendRequest(user.getUsername(), email, option.isAllow()));
     }
 
-    @DeleteMapping
+    @PostMapping("/remove")
     @Override
     public ResponseEntity<?> remove(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);

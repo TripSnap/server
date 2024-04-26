@@ -87,6 +87,12 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
 
     @Transactional
     @Override
+    public List<Friend> getFriendsByMemberId(Pageable pageable, Long memberId) {
+        return getFriendsByMemberId(pageable.getOffset(), pageable.getPageSize(), memberId);
+    }
+
+    @Transactional
+    @Override
     public List<Friend> getFriendsByMemberId(long offset, long limit, Long memberId) {
         QFriend friend = QFriend.friend;
         JPAQuery<Friend> query = new JPAQuery<>(em);

@@ -2,6 +2,8 @@ package com.tripsnap.api.utils;
 
 import com.google.gson.reflect.TypeToken;
 import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
+import com.tripsnap.api.domain.dto.option.FriendListOption;
+import com.tripsnap.api.validator.ValidEnum;
 import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,8 @@ public enum ValidationType {
     public enum PrimitiveWrapper {
         Email(EmailType.class),
         LoginPassword(LoginPasswordType.class),
-        EntityId(EntityIdType.class);
+        EntityId(EntityIdType.class),
+        FriendListOptionType(FriendListOptionType.class);
 
         public final Class<?> _class;
 
@@ -68,6 +71,16 @@ public enum ValidationType {
         @Override
         public String toString() {
             return String.valueOf(id);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class FriendListOptionType {
+        @ValidEnum(enumClass = FriendListOption.class)
+        final private String option;
+        @Override
+        public String toString() {
+            return option;
         }
     }
 

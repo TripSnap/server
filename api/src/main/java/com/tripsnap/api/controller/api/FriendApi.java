@@ -1,10 +1,10 @@
 package com.tripsnap.api.controller.api;
 
 
-import com.tripsnap.api.domain.dto.PageDTO;
-import com.tripsnap.api.domain.dto.ProcessOption;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.dto.SearchMemberDTO;
+import com.tripsnap.api.domain.dto.option.FriendListOption;
+import com.tripsnap.api.domain.dto.option.ProcessOption;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,8 +29,13 @@ import java.util.Map;
 })
 public interface FriendApi {
     @Operation(summary = "친구 목록", security = @SecurityRequirement(name = "Authorization"))
+    @RequestBody(content = @Content(schemaProperties = {
+            @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="option", schema = @Schema(implementation = FriendListOption.class))
+    }))
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
-    ResponseEntity<?> friendList(User user, PageDTO pageDTO);
+    ResponseEntity<?> friendList(User user, Map<String, Object> param);
 
     @Operation(summary = "친구 검색", security = @SecurityRequirement(name = "Authorization"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))

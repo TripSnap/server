@@ -13,6 +13,7 @@ public interface CustomFriendRepository {
     Boolean createFriend(long memberId, long friendId);
     Boolean removeFriend(long memberId, long friendId);
     void removeFriendAndRequestAll(long memberId);
+    List<Friend> getFriendsByMemberId(Pageable pageable, Long memberId);
     List<Friend> getFriendsByMemberId(long offset, long limit, Long memberId);
 
     /**
