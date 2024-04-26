@@ -43,6 +43,12 @@ public class GroupController implements GroupApi {
         return ResponseEntity.ok(groupService.deleteGroup(user.getUsername(), groupId));
     }
 
+    @Override
+    @GetMapping("/invite/list")
+    public ResponseEntity<?> inviteList(@AuthenticationPrincipal User user, @Valid PageDTO param) {
+        return ResponseEntity.ok(groupService.getGroupInviteList(user.getUsername(), param));
+    }
+
     @PostMapping("/members")
     @Override
     public ResponseEntity<ResultDTO.SimpleWithPageData<List<MemberDTO>>> groupMembers(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {

@@ -1,6 +1,7 @@
 package com.tripsnap.api.repository;
 
 import com.tripsnap.api.domain.entity.Group;
+import com.tripsnap.api.domain.entity.GroupMemberRequest;
 import com.tripsnap.api.domain.entity.Member;
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +14,5 @@ public interface CustomGroupRepository {
     List<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId);
 
     void updateGroupOwner(Group group);
+    List<GroupMemberRequest> getGroupInviteListByMemberId(Pageable pageable, long memberId);
 }

@@ -6,6 +6,8 @@ import com.tripsnap.api.domain.dto.PageDTO;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.domain.dto.option.ProcessOption;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +42,14 @@ public interface GroupApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> removeGroup(User user, Long groupId);
+
+    @Operation(summary = "그룹 초대 목록", security = @SecurityRequirement(name = "Authorization"))
+    @Parameters({
+            @Parameter(name = "page", schema = @Schema(implementation = Long.class)),
+            @Parameter(name = "pagePerCnt", schema = @Schema(implementation = Long.class)),
+    })
+    @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
+    ResponseEntity<?> inviteList(User user, @Parameter(hidden = true) PageDTO param);
 
     @Operation(summary = "그룹 멤버 리스트", security = @SecurityRequirement(name = "Authorization"))
     @RequestBody(content = @Content(schemaProperties = {

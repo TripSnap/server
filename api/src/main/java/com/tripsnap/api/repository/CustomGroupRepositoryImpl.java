@@ -90,6 +90,11 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
         }
     }
 
+    /**
+     * 그룹에서 그룹장을 제외 한 제일 빨리 가입한 회원을 가져온다.
+     * @param group
+     * @return
+     */
     private Optional<GroupMember> getSuccessor(Group group) {
         QGroupMember groupMember = QGroupMember.groupMember;
         JPAQuery<GroupMember> query = new JPAQuery<>(em);
@@ -97,5 +102,15 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
                 .where(groupMember.group.eq(group)).orderBy(groupMember.createdAt.asc())
                 .offset(1).limit(1).fetchFirst();
         return Optional.ofNullable(member);
+    }
+
+    @Override
+    public List<GroupMemberRequest> getGroupInviteListByMemberId(Pageable pageable, long memberId) {
+        // TODO: 쿼리 개선해야 함..
+        QGroupMemberRequest groupMemberRequest = QGroupMemberRequest.groupMemberRequest;
+        JPAQuery<GroupMemberRequest> query = new JPAQuery<>(em);
+        List<GroupMemberRequest> groupMemberRequests = query.select(groupMemberRequest).from(groupMemberRequest)
+                .where(groupMemberRequest.id.memberId.eq(memberId)).offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
+        return groupMemberRequests;
     }
 }

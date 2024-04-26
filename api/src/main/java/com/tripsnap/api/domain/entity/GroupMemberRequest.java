@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +18,14 @@ import lombok.NoArgsConstructor;
 public class GroupMemberRequest extends BaseEntity {
     @EmbeddedId
     GroupMemberId id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn(name = "member_id")
     private Member member;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="group_id",insertable=false, updatable=false)
     private Group group;
+
+    public LocalDateTime getExpireDate() {
+        return createdAt.plusDays(7);
+    }
 }

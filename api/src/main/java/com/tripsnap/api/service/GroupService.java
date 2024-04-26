@@ -96,6 +96,12 @@ public class GroupService {
         }
     }
 
+    /**
+     * 그룹 인원 검사 후 1명 초과면 그룹장을 넘기고 탈퇴, 1명이면 그룹을 삭제한다.
+     * @param member
+     * @param group
+     * @return
+     */
     @Transactional
     public ResultDTO.SimpleSuccessOrNot leaveGroup(Member member, Group group) {
         int memberCount = groupMemberRepository.countByGroupId(group.getId());
@@ -111,6 +117,15 @@ public class GroupService {
         }
 
         return ResultDTO.SuccessOrNot(true);
+    }
+
+    public ResultDTO.SimpleWithPageData<List<?>> getGroupInviteList(String email, PageDTO pageDTO) {
+        Member member = permissionCheckService.getMember(email);
+
+        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
+        List<GroupMemberRequest> requestEntities = groupRepository.getGroupInviteListByMemberId(pageable, member.getId());
+        List<GroupMemberRequestDTO> requestDTOList = groupMapper.toRequestDTOList(requestEntities);
+        return ResultDTO.WithPageData(pageable, requestDTOList);
     }
 
 
