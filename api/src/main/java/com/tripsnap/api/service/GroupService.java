@@ -49,6 +49,12 @@ public class GroupService {
         Group group = Group.builder().owner(member)
                 .title(groupInsDTO.title()).build();
         groupRepository.save(group);
+        
+        // 그룹 장은 바로 그룹 멤버에 추가
+        GroupMember owner = GroupMember.builder()
+                .id(GroupMemberId.builder().groupId(group.getId()).memberId(member.getId()).build())
+                .build();
+        groupMemberRepository.save(owner);
 
         // 이메일을 통해 member의 친구 목록애서 회원 정보를 가져옴
         List<Friend> friends = friendRepository.getFriendListByEmail(member.getId(), groupInsDTO.memberEmails());
