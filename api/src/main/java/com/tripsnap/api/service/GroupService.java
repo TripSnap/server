@@ -119,7 +119,7 @@ public class GroupService {
         return ResultDTO.SuccessOrNot(true);
     }
 
-    public ResultDTO.SimpleWithPageData<List<?>> getGroupInviteList(String email, PageDTO pageDTO) {
+    public ResultDTO.SimpleWithPageData<List<GroupMemberRequestDTO>> getGroupInviteList(String email, PageDTO pageDTO) {
         Member member = permissionCheckService.getMember(email);
 
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());

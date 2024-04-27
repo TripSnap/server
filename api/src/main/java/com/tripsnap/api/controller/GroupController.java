@@ -45,7 +45,7 @@ public class GroupController implements GroupApi {
 
     @Override
     @GetMapping("/invite/list")
-    public ResponseEntity<?> inviteList(@AuthenticationPrincipal User user, @Valid PageDTO param) {
+    public ResponseEntity<ResultDTO.SimpleWithPageData<List<GroupMemberRequestDTO>>> inviteList(@AuthenticationPrincipal User user, @Valid PageDTO param) {
         return ResponseEntity.ok(groupService.getGroupInviteList(user.getUsername(), param));
     }
 
