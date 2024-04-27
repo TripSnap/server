@@ -169,6 +169,17 @@ public class FriendService {
         return ResultDTO.SuccessOrNot(false, "친구 요청 내역이 존재하지 않습니다.");
     }
 
+    public ResultDTO.SimpleSuccessOrNot removeSendRequest(String email, String friendEmail) {
+        Member member = permissionCheckService.getMember(email);
+        Member friend = permissionCheckService.getMember(friendEmail);
+
+        MemberFriendId requestId = MemberFriendId.builder().memberId(member.getId()).friendId(friend.getId()).build();
+
+        friendRequestRepository.deleteById(requestId);
+
+        return ResultDTO.SuccessOrNot(true);
+    }
+
     // 친구 삭제
     public ResultDTO.SimpleSuccessOrNot removeFriend(String email, String friendEmail) {
         Member member = permissionCheckService.getMember(email);

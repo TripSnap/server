@@ -63,6 +63,13 @@ public interface FriendApi {
     )
     ResponseEntity<?> sendRequest(User user, Map<String, Object> param);
 
+    @Operation(summary = "친구 신청 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
+    @ApiResponse(responseCode = "200", description = "successful operation",
+            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
+    )
+    ResponseEntity<?> removeSendRequest(User user, Map<String, Object> param);
+
     @Operation(summary = "친구 수락 또는 거절", security = @SecurityRequirement(name = "Authorization"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",

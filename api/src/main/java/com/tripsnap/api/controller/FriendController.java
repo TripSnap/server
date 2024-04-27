@@ -60,6 +60,13 @@ public class FriendController implements FriendApi {
         return ResponseEntity.ok(friendService.sendRequest(user.getUsername(), email));
     }
 
+    @PostMapping("/send-request/remove")
+    @Override
+    public ResponseEntity<?> removeSendRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
+        return ResponseEntity.ok(friendService.removeSendRequest(user.getUsername(), email));
+    }
+
     @PostMapping("/{option:allow|deny}-request")
     @Override
     public ResponseEntity<?> processRequest(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param, @PathVariable("option") ProcessOption option) {
