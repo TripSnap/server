@@ -18,7 +18,7 @@ public class Group extends BaseEntity {
     @Column(name="group_id")
     private Long id;
     private String title;
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="owner_id", referencedColumnName = "member_id")
     private Member owner;
 

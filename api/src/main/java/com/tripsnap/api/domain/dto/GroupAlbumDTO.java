@@ -3,7 +3,7 @@ package com.tripsnap.api.domain.dto;
 import java.util.List;
 
 public record GroupAlbumDTO(
-        Long albumId,
+        Long id,
         Double latitude,
         Double longitude,
         String address,

@@ -1,6 +1,5 @@
 package com.tripsnap.api.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
@@ -11,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepository{
     @PersistenceContext
@@ -23,15 +24,15 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
         QMember member = QMember.member;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        List<Tuple> tupleList = queryFactory.select(groupAlbum, member).from(groupAlbum)
-                .leftJoin(member).on(groupAlbum.groupId.eq(groupId), groupAlbum.memberId.eq(member.id))
+        List<GroupAlbum> groupAlbums = queryFactory.selectFrom(groupAlbum).where(groupAlbum.groupId.eq(groupId))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
 
-        return tupleList.stream().map(tuple -> {
-            GroupAlbum album = tuple.get(groupAlbum);
-            album.setMember(tuple.get(member));
-            return album;
-        }).toList();
+        List<Long> memberIds = groupAlbums.stream().map(GroupAlbum::getMemberId).toList();
+
+        List<Member> members = queryFactory.selectFrom(member).where(member.id.in(memberIds)).fetch();
+        Map<Long, Member> memberMap = members.stream().collect(Collectors.toMap(Member::getId, (m) -> m));
+
+        return groupAlbums.stream().peek((album -> album.setMember(memberMap.get(album.getMemberId())))).toList();
     }
 
     // 앨범 사진 가져오기
