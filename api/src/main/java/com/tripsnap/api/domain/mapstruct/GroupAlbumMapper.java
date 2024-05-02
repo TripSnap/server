@@ -16,6 +16,7 @@ import java.util.List;
         uses = MemberMapper.class
 )
 public abstract class GroupAlbumMapper {
+    @Mapping(source="createdAt", target = "date", dateFormat = "yyyy/MM/dd HH:mm")
     public abstract GroupAlbumDTO toDTO(GroupAlbum entity);
     public abstract List<GroupAlbumDTO> toDTOList(List<GroupAlbum> entityList);
 

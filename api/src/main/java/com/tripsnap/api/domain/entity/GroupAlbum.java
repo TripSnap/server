@@ -17,6 +17,7 @@ public class GroupAlbum extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="album_id")
     private Long id;
+    private String title;
     private Long groupId;
     private Long memberId;
     @Column(nullable = false)
