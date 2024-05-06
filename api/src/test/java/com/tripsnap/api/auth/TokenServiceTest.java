@@ -83,11 +83,9 @@ class TokenServiceTest {
     @Test
     @DisplayName("만료된 Access Token 생성")
     void expireAccessToken() {
-        String email = "test54@naver.com";
-        String accessToken = tokenService.expireAccessToken(email);
+        String accessToken = tokenService.expireAccessToken();
         Assertions.assertDoesNotThrow(() -> {
             DecryptedToken decryptedToken = tokenService.verifyAccessToken(accessToken);
-            Assertions.assertEquals(decryptedToken.email(), email);
             Assertions.assertTrue(decryptedToken.expired());
         });
     }
