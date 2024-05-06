@@ -2,6 +2,7 @@ package com.tripsnap.api.auth.login;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tripsnap.api.exception.ServiceException;
 import com.tripsnap.api.filter.MultiReadHttpServletRequest;
 import com.tripsnap.api.utils.ParameterUtil;
 import com.tripsnap.api.utils.ValidationType;
@@ -38,16 +39,20 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
         if (!checkMethod(request.getMethod())) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
+        try {
 
-        Map<String, Object> map = gson.fromJson(multiReadRequest.getBodyJson(), new TypeToken<Map<String, Object>>(){}.getType());
-        String email = ParameterUtil.validationAndConvert(map.get(FORM_USERNAME_ATTR_NAME), ValidationType.PrimitiveWrapper.Email);
-        String password = ParameterUtil.validationAndConvert(map.get(FORM_PASSWORD_ATTR_NAME), ValidationType.PrimitiveWrapper.LoginPassword);
+            Map<String, Object> map = gson.fromJson(multiReadRequest.getBodyJson(), new TypeToken<Map<String, Object>>(){}.getType());
+            String email = ParameterUtil.validationAndConvert(map.get(FORM_USERNAME_ATTR_NAME), ValidationType.PrimitiveWrapper.Email);
+            String password = ParameterUtil.validationAndConvert(map.get(FORM_PASSWORD_ATTR_NAME), ValidationType.PrimitiveWrapper.LoginPassword);
 
-        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(email,
-                password);
-        // Allow subclasses to set the "details" property
+            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(email,
+                    password);
+            // Allow subclasses to set the "details" property
 //        setDetails(request, authRequest);
-        return this.getAuthenticationManager().authenticate(authRequest);
+            return this.getAuthenticationManager().authenticate(authRequest);
+        } catch (NullPointerException e) {
+            throw ServiceException.BadRequestException();
+        }
     }
 
     @Nullable
