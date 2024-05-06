@@ -16,6 +16,7 @@ import com.tripsnap.api.controller.AuthController;
 import com.tripsnap.api.utils.TimeUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.AeadAlgorithm;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -50,6 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("JWT 필터 테스트")
 @ExtendWith(SpringExtension.class)
+@TestPropertySource(properties = {"springdoc.swagger-ui.enabled=false"})
 @ContextConfiguration(classes = {CommonSecurityConfig.class, SecurityConfig.class,  AppConfig.class, RedisTestConfig.class})
 @WebAppConfiguration
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -107,11 +110,13 @@ class JWTFilterTest {
     void normalToken() throws Exception {
         String email = "test4t@naver.com";
         String accessToken = tokenService.createAccessToken(email, "ROLE_USER");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        tokenService.setAccessTokenToResponse(accessToken, response);
 
         mvc
                 .perform(
                         get("/test")
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + accessToken)
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().isOk())
                 .andExpect(result -> Assertions.assertFalse(result.getResponse().containsHeader(HttpHeaders.WWW_AUTHENTICATE)));
@@ -122,22 +127,27 @@ class JWTFilterTest {
     void wrongToken() throws Exception {
         String email = "test4t@naver.com";
         String accessToken = tokenService.createAccessToken(email, "ROLE_USER");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        tokenService.setAccessTokenToResponse(accessToken+"tttttest", response);
 
         mvc
                 .perform(
                         get("/test")
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + accessToken + "abcde")
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().is(401))
-                .andExpect(result -> result.getResponse().containsHeader(HttpHeaders.WWW_AUTHENTICATE));
+                .andExpect(result -> Assertions.assertTrue(result.getResponse().containsHeader(HttpHeaders.WWW_AUTHENTICATE)));
     }
 
     @DisplayName("access token 만료")
     @Test
     void expiredAccessToken() throws Exception {
         String email = "test4t@naver.com";
-        String expiredAccessToken = expiredAccessToken(email);
         String refreshToken = tokenService.createRefreshToken(email);
+
+        String expiredAccessToken = expiredAccessToken(email);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        tokenService.setAccessTokenToResponse(expiredAccessToken, response);
 
         Assertions.assertDoesNotThrow(() -> tokenService.verifyRefreshToken(refreshToken, email));
 
@@ -145,13 +155,13 @@ class JWTFilterTest {
         mvc
                 .perform(
                         get("/test")
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + expiredAccessToken)
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().is(401))
                 .andExpect(result -> {
-                    MockHttpServletResponse response = result.getResponse();
-                    Assertions.assertTrue(response.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
-                    Assertions.assertEquals(response.getHeader(HttpHeaders.WWW_AUTHENTICATE), "Refresh-Token");
+                    MockHttpServletResponse resultResponse = result.getResponse();
+                    Assertions.assertTrue(resultResponse.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
+                    Assertions.assertEquals(resultResponse.getHeader(HttpHeaders.WWW_AUTHENTICATE), "Refresh-Token");
                 });
 
 
@@ -160,13 +170,16 @@ class JWTFilterTest {
         mvc
                 .perform(
                         post("/refresh").param("grant_type","refresh_token").param("token", refreshToken)
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + expiredAccessToken)
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().isOk())
                 .andExpect(result -> {
-                    MockHttpServletResponse response = result.getResponse();
-                    Assertions.assertTrue(response.containsHeader(HttpHeaders.AUTHORIZATION));
-                    String accessToken = response.getHeader(HttpHeaders.AUTHORIZATION).replaceFirst(tokenService.TOKEN_TYPE, "");
+                    MockHttpServletResponse resultResponse = result.getResponse();
+
+                    Cookie cookie = resultResponse.getCookie("access-token");
+                    Assertions.assertNotNull(cookie);
+
+                    String accessToken = cookie.getValue();
                     Assertions.assertDoesNotThrow(() -> tokenService.verifyAccessToken(accessToken));
                 });
     }
@@ -178,17 +191,20 @@ class JWTFilterTest {
         String expiredAccessToken = expiredAccessToken(email);
         String refreshToken = expiredRefreshToken(email);
 
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        tokenService.setAccessTokenToResponse(expiredAccessToken, response);
+
         // 정상 요청, 토큰 만료로 인해 401
         mvc
                 .perform(
                         get("/test")
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + expiredAccessToken)
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().is(401))
                 .andExpect(result -> {
-                    MockHttpServletResponse response = result.getResponse();
-                    Assertions.assertTrue(response.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
-                    Assertions.assertEquals(response.getHeader(HttpHeaders.WWW_AUTHENTICATE), "Refresh-Token");
+                    MockHttpServletResponse resultResponse = result.getResponse();
+                    Assertions.assertTrue(resultResponse.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
+                    Assertions.assertEquals(resultResponse.getHeader(HttpHeaders.WWW_AUTHENTICATE), "Refresh-Token");
                 });
 
 
@@ -197,13 +213,13 @@ class JWTFilterTest {
         mvc
                 .perform(
                         post("/refresh").param("grant_type","refresh_token").param("token", refreshToken)
-                                .header(HttpHeaders.AUTHORIZATION, tokenService.TOKEN_TYPE + expiredAccessToken)
+                                .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().is4xxClientError())
                 .andExpect(result -> {
-                    MockHttpServletResponse response = result.getResponse();
-                    Assertions.assertTrue(response.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
-                    Assertions.assertFalse(response.containsHeader(HttpHeaders.AUTHORIZATION));
+                    MockHttpServletResponse resultResponse = result.getResponse();
+                    Assertions.assertTrue(resultResponse.containsHeader(HttpHeaders.WWW_AUTHENTICATE));
+                    Assertions.assertFalse(resultResponse.containsHeader(HttpHeaders.AUTHORIZATION));
                 });
     }
 
