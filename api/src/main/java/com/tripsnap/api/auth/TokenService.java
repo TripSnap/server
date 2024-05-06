@@ -42,6 +42,7 @@ public class TokenService {
     public void removeAccessToken(HttpServletRequest request, HttpServletResponse response) {
         getAccessTokenCookie(request).ifPresent(cookie -> {
             Cookie removedCookie = (Cookie) cookie.clone();
+            removedCookie.setValue(expireAccessToken());
             removedCookie.setMaxAge(0);
             response.addCookie(removedCookie);
         });
@@ -90,12 +91,11 @@ public class TokenService {
         }
     }
 
-    public String expireAccessToken(String email) {
+    public String expireAccessToken() {
         Date issuedAt = TimeUtil.timeCalc(new Date(), (-1) * ACCESS_TOKEN_TIME);
         return Jwts.builder()
                 .header().and()
-                .issuer(email)
-                .issuedAt(issuedAt)
+                .issuedAt(new Date())
                 .expiration(issuedAt)
                 .encryptWith(key, enc)
                 .compact();
