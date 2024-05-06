@@ -6,10 +6,10 @@ import com.tripsnap.api.auth.vo.DecryptedToken;
 import com.tripsnap.api.auth.vo.TokenData;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -18,6 +18,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class JWTFilter extends OncePerRequestFilter {
 
@@ -31,19 +33,17 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if(hasAccessToken(request)) {
-            String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-            String token = header.replaceFirst(TokenService.TOKEN_TYPE, "");
-
-            DecryptedToken decryptedToken = tokenService.verifyAccessToken(token);
+        tokenService.getAccessTokenCookie(request).ifPresent((cookie -> {
+            String accessToken = cookie.getValue();
+            DecryptedToken decryptedToken = tokenService.verifyAccessToken(accessToken);
 
             if(decryptedToken.expired()) {
                 try {
                     if(hasRefreshToken(request)) {
                         String refreshToken = request.getParameter("token");
                         if(tokenService.verifyRefreshToken(refreshToken, decryptedToken.email()) ) {
-                            String accessToken = tokenService.createAccessToken(decryptedToken.email(), decryptedToken.role());
-                            tokenService.setAccessTokenToResponse(accessToken, response);
+                            String newAccessToken = tokenService.createAccessToken(decryptedToken.email(), decryptedToken.role());
+                            tokenService.setAccessTokenToResponse(newAccessToken, response);
                         }
                     } else {
                         throw new AccessTokenExpiredException();
@@ -54,7 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             setAuthentication(decryptedToken);
-        }
+        }));
 
         filterChain.doFilter(request, response);
     }
@@ -67,9 +67,10 @@ public class JWTFilter extends OncePerRequestFilter {
                 && "refresh_token".equals(grantType) && StringUtils.hasText(token);
     }
 
-    private boolean hasAccessToken(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        return StringUtils.hasText(header) && StringUtils.startsWithIgnoreCase(header, TokenService.TOKEN_TYPE);
+    private String getAccessToken(HttpServletRequest request) {
+        Optional<Cookie> optionalCookie = Arrays.stream(request.getCookies()).filter((cookie) -> "access-token".equals(cookie.getName())).findFirst();
+        Optional<String> token = optionalCookie.map(Cookie::getValue);
+        return token.orElse(null);
     }
 
     private void setAuthentication(DecryptedToken tokenData) {

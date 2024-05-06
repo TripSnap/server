@@ -21,8 +21,7 @@ public class JWTLogoutHandler implements LogoutHandler {
         if(authentication != null) {
             String email = String.valueOf(authentication.getPrincipal());
             if(StringUtils.hasText(email)) {
-                String expireAccessToken = tokenService.expireAccessToken(email);
-                tokenService.setAccessTokenToResponse(expireAccessToken, response);
+                tokenService.removeAccessToken(request,response);
                 tokenService.removeRefreshToken(email);
             }
         }

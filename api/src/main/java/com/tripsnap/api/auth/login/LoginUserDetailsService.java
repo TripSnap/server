@@ -5,14 +5,12 @@ import com.tripsnap.api.domain.entity.Member;
 import com.tripsnap.api.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -28,7 +26,7 @@ public class LoginUserDetailsService implements UserDetailsService {
             Optional<Member> optMember = memberRepository.findByEmail(username);
             if(optMember.isPresent()) {
                 Member member = optMember.get();
-                User user = new User(member.getEmail(), member.getPassword(), List.of(new SimpleGrantedAuthority(Roles.USER)));
+                UserDetails user = User.withUsername(member.getEmail()).password(member.getPassword()).roles(Roles.USER).build();
                 return user;
             } else {
                 throw new UsernameNotFoundException("user not found");
