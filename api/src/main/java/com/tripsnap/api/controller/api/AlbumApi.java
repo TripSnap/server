@@ -28,7 +28,7 @@ import java.util.Map;
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface AlbumApi {
-    @Operation(summary = "기록 목록", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "기록 목록", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
@@ -38,23 +38,23 @@ public interface AlbumApi {
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> getAlbums(User user, Map<String, Object> param);
 
-    @Operation(summary = "기록 추가", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "기록 추가", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> addAlbum(User user, GroupAlbumInsDTO param);
 
-    @Operation(summary = "기록 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "기록 삭제", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> removeAlbum(User user, GroupAlbumParamDTO paramDTO);
 
-    @Operation(summary = "기록 사진 리스트", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "기록 사진 리스트", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation", useReturnTypeSchema = true)
     ResponseEntity<?> photos(User user, Map<String, Object> param);
 
-    @Operation(summary = "사진 추가", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "사진 추가", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
@@ -65,7 +65,7 @@ public interface AlbumApi {
     )
     ResponseEntity<?> addPhotos(User user, Map<String, Object> param);
 
-    @Operation(summary = "사진 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "사진 삭제", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),

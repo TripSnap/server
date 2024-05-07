@@ -2,6 +2,7 @@ package com.tripsnap.api.config;
 
 
 import com.tripsnap.api.openapi.CustomOpenAPI;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -25,11 +26,12 @@ import java.util.List;
 )
 @Configuration
 @SecurityScheme(
-        name = "Authorization",
-        description = "Bearer {jwt token}",
+        name = "access-token",
+        description = "access token cookie",
         type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
-        scheme = "bearer"
+        scheme = "bearer",
+        in = SecuritySchemeIn.COOKIE
 )
 public class SwaggerConfig {
 
@@ -73,7 +75,7 @@ public class SwaggerConfig {
                 .requestBody(List.of(Tuples.of("email", "string"), Tuples.of("password", "string")))
                 .response("200", "successful operation",
                         CustomOpenAPI.Decorator.header(List.of(
-                                Tuples.of(HttpHeaders.AUTHORIZATION, "access token"),
+                                Tuples.of(HttpHeaders.SET_COOKIE, "access-token={token}"),
                                 Tuples.of("Refresh-Token", "refresh token")
                         ))
                 )
@@ -82,7 +84,7 @@ public class SwaggerConfig {
 
         CustomOpenAPI.Decorator
                 .get().pathname("/logout").tag("auth").summary("로그아웃")
-                .securityToken("Authorization")
+                .securityToken("access-token")
                 .response("200", "successful operation")
                 .response("401", "access token 만료")
                 .response("401 ", "로그인 필요")

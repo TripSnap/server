@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface AuthApi {
-    @Operation(summary = "토큰 갱신", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "토큰 갱신", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(),
             headers = {
