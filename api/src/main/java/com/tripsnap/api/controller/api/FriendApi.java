@@ -31,7 +31,7 @@ import java.util.Map;
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface FriendApi {
-    @Operation(summary = "친구 목록", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 목록", security = @SecurityRequirement(name = "access-token"))
     @Parameters({
             @Parameter(name = "page", schema = @Schema(implementation = Long.class)),
             @Parameter(name = "pagePerCnt", schema = @Schema(implementation = Long.class)),
@@ -40,7 +40,7 @@ public interface FriendApi {
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> friendList(User user, @Parameter(hidden = true) Map<String, Object> param);
 
-    @Operation(summary = "보낸 친구 신청 목록", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "보낸 친구 신청 목록", security = @SecurityRequirement(name = "access-token"))
     @Parameters({
             @Parameter(name = "page", schema = @Schema(implementation = Long.class)),
             @Parameter(name = "pagePerCnt", schema = @Schema(implementation = Long.class)),
@@ -48,7 +48,7 @@ public interface FriendApi {
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> friendSendRequestList(User user, @Parameter(hidden = true) PageDTO param);
 
-    @Operation(summary = "친구 검색", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 검색", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schemaProperties = @SchemaProperty(name="data", schema = @Schema(implementation = SearchMemberDTO.class)))
@@ -56,28 +56,28 @@ public interface FriendApi {
     ResponseEntity<?> search(User user, Map<String, Object> param);
 
 
-    @Operation(summary = "친구 신청", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 신청", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> sendRequest(User user, Map<String, Object> param);
 
-    @Operation(summary = "친구 신청 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 신청 삭제", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> removeSendRequest(User user, Map<String, Object> param);
 
-    @Operation(summary = "친구 수락 또는 거절", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 수락 또는 거절", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class))
     )
     ResponseEntity<?> processRequest(User user, Map<String, Object> param, ProcessOption option);
 
-    @Operation(summary = "친구 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "친구 삭제", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content( schemaProperties = @SchemaProperty(name="email", schema = @Schema(implementation = String.class) )))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))

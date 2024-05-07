@@ -24,18 +24,18 @@ import org.springframework.security.core.userdetails.User;
 })
 public interface NotificationApi {
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
-    @Operation(summary = "알람 리스트", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "알람 리스트", security = @SecurityRequirement(name = "access-token"))
     ResponseEntity<?> notificationList(User user, PageDTO pageDTO);
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
-    @Operation(summary = "알람 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "알람 삭제", security = @SecurityRequirement(name = "access-token"))
     ResponseEntity<?> remove(User user, RemoveNotificationDTO param);
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
-    @Operation(summary = "알람 읽음처리", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "알람 읽음처리", security = @SecurityRequirement(name = "access-token"))
     ResponseEntity<?> read(User user);
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true,
             content=@Content(schemaProperties = @SchemaProperty(name = "existed", schema = @Schema(implementation = Boolean.class))))
-    @Operation(summary = "새로운 알람 있는지 확인", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "새로운 알람 있는지 확인", security = @SecurityRequirement(name = "access-token"))
     ResponseEntity<?> checkNewNotification(User user);
 }

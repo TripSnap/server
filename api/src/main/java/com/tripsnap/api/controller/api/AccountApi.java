@@ -27,26 +27,26 @@ import java.util.Map;
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface AccountApi {
-    @Operation(summary = "회원 탈퇴", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "회원 탈퇴", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> leave(User user);
 
-    @Operation(summary = "회원 정보 가져오기", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "회원 정보 가져오기", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = MemberDTO.class))
     )
     ResponseEntity<?> getUserData(User user);
 
-    @Operation(summary = "회원 정보 변경", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "회원 정보 변경", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schema = @Schema()))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
     )
     ResponseEntity<?> updateData(User user, MemberEditDTO param);
 
-    @Operation(summary = "회원 비밀번호 변경", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "회원 비밀번호 변경", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schema = @Schema()))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class))

@@ -35,6 +35,7 @@ public class TokenService {
         Cookie cookie = new Cookie("access-token", token);
         cookie.setMaxAge(REFRESH_TOKEN_TIME);
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
 //        cookie.setSecure(true);
         response.addCookie(cookie);
     }
@@ -44,6 +45,8 @@ public class TokenService {
             Cookie removedCookie = (Cookie) cookie.clone();
             removedCookie.setValue(expireAccessToken());
             removedCookie.setMaxAge(0);
+            removedCookie.setHttpOnly(true);
+            removedCookie.setPath("/");
             response.addCookie(removedCookie);
         });
 

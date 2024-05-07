@@ -70,7 +70,12 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(new AuthenticationExceptionHandler()));
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationExceptionHandler()));
+    }
+
+    @Bean
+    public AuthenticationExceptionHandler authenticationExceptionHandler() {
+        return new AuthenticationExceptionHandler();
     }
 
     @Bean
@@ -131,7 +136,7 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
         config.setAllowedOrigins(List.of(clientUrls));
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of(HttpHeaders.AUTHORIZATION,HttpHeaders.WWW_AUTHENTICATE, "Refresh-Token"));
+        config.setExposedHeaders(List.of(HttpHeaders.WWW_AUTHENTICATE, "Refresh-Token"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
