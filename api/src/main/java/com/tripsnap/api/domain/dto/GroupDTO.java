@@ -4,5 +4,6 @@ public record GroupDTO(
     Long id,
     String title,
     MemberDTO owner,
-    String createdAt
+    String createdAt,
+    boolean isOwner
 ) {}

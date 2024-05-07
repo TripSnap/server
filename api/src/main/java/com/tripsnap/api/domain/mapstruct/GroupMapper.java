@@ -10,10 +10,13 @@ import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class GroupMapper {
-    public abstract List<GroupDTO> toDTOList(List<Group> source);
+    public List<GroupDTO> toDTOList(List<Group> source, String email) {
+        return source.stream().map((group) -> toDTO(group, email)).toList();
+    }
 
-    @Mapping(target = "createdAt", source = "createdAt", dateFormat = "yyyy/MM/dd")
-    public abstract GroupDTO toDTO(Group source);
+    @Mapping(target = "createdAt", source = "source.createdAt", dateFormat = "yyyy/MM/dd")
+    @Mapping(target="isOwner", expression = "java(email.equals(source.getOwner().getEmail()))")
+    public abstract GroupDTO toDTO(Group source, String email);
 
 
 
