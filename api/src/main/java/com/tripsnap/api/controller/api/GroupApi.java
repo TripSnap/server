@@ -28,20 +28,20 @@ import java.util.Map;
         @ApiResponse(responseCode = "403", description = "권한에 맞지 않는 접근",content = @Content())
 })
 public interface GroupApi {
-    @Operation(summary = "회원이 가입한 그룹 리스트", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "회원이 가입한 그룹 리스트", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> groups(User user, PageDTO param);
-    @Operation(summary = "그룹 생성", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 생성", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> addGroup(User user, GroupInsDTO param);
 
-    @Operation(summary = "그룹 삭제", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 삭제", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> removeGroup(User user, Long groupId);
 
-    @Operation(summary = "그룹 멤버 리스트", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 멤버 리스트", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
@@ -50,12 +50,12 @@ public interface GroupApi {
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> groupMembers(User user, Map<String, Object> param);
 
-    @Operation(summary = "그룹 탈퇴", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 탈퇴", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> leaveGroup(User user, Long groupId);
 
-    @Operation(summary = "그룹 초대 취소", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 초대 취소", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="memberId", schema = @Schema(implementation = Long.class))
@@ -64,7 +64,7 @@ public interface GroupApi {
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     ResponseEntity<?> cancelInvite(User user, Map<String, Object> param);
 
-    @Operation(summary = "그룹 초대 수락 및 거절", security = @SecurityRequirement(name = "Authorization"))
+    @Operation(summary = "그룹 초대 수락 및 거절", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class)))
     ResponseEntity<?> processInvite(User user, ProcessOption invite, Long groupId);
