@@ -31,6 +31,13 @@ public class GroupController implements GroupApi {
     }
 
     @Override
+    @GetMapping(value = "/{group-id:\\d+}")
+    public ResponseEntity<?> group(@AuthenticationPrincipal User user, @PathVariable("group-id") Long groupId) {
+        ParameterUtil.validation(groupId, ValidationType.PrimitiveWrapper.EntityId);
+        return ResponseEntity.ok(groupService.getGroup(user.getUsername(), groupId));
+    }
+
+    @Override
     @PostMapping
     public ResponseEntity<?> addGroup(@AuthenticationPrincipal User user, @Valid @RequestBody GroupInsDTO param) {
         return ResponseEntity.ok(groupService.createGroup(user.getUsername(), param));

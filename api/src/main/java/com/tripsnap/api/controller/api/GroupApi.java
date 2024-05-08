@@ -1,6 +1,7 @@
 package com.tripsnap.api.controller.api;
 
 
+import com.tripsnap.api.domain.dto.GroupDTO;
 import com.tripsnap.api.domain.dto.GroupInsDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
 import com.tripsnap.api.domain.dto.ResultDTO;
@@ -33,6 +34,11 @@ public interface GroupApi {
     @Operation(summary = "회원이 가입한 그룹 리스트", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",useReturnTypeSchema = true)
     ResponseEntity<?> groups(User user, PageDTO param);
+
+    @Operation(summary = "그룹 한개만 가져오기", security = @SecurityRequirement(name = "access-token"))
+    @ApiResponse(responseCode = "200", description = "successful operation",
+            content = @Content(schema = @Schema(implementation = GroupDTO.class)))
+    ResponseEntity<?> group(User user, Long groupId);
     @Operation(summary = "그룹 생성", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))

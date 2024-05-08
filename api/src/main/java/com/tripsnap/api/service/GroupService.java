@@ -37,7 +37,16 @@ public class GroupService {
         Pageable pageable = Pageable.ofSize(param.pagePerCnt()).withPage(param.page());
         List<Group> groups = groupRepository.getGroupsByMemberId(pageable,member.getId());
 
-        return ResultDTO.WithPageData(pageable, groupMapper.toDTOList(groups));
+        return ResultDTO.WithPageData(pageable, groupMapper.toDTOList(groups, email));
+    }
+
+    // 그룹 한개만 가져오기
+    public ResultDTO.SimpleWithData<GroupDTO> getGroup(String email, Long groupId) {
+        Member member = permissionCheckService.getMember(email);
+        Optional<Group> optionalGroup = groupRepository.findGroupById(groupId);
+        Group group = optionalGroup.orElseThrow(ServiceException::BadRequestException);
+
+        return ResultDTO.WithData(groupMapper.toDTO(group, email));
     }
 
     // 그룹 만들기
