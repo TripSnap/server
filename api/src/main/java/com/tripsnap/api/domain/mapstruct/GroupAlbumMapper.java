@@ -20,7 +20,6 @@ public abstract class GroupAlbumMapper {
     public abstract GroupAlbumDTO toDTO(GroupAlbum entity);
     public abstract List<GroupAlbumDTO> toDTOList(List<GroupAlbum> entityList);
 
-    @Mapping(target="albumPhotoList", ignore = true)
     public abstract GroupAlbum toGroupAlbumEntity(GroupAlbumInsDTO dto, Long memberId);
 
 

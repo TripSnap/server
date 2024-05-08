@@ -4,9 +4,6 @@ import com.tripsnap.api.domain.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +23,6 @@ public class GroupAlbum extends BaseEntity {
     private Double longitude;
     private String address;
     private String thumbnail;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "groupAlbum")
-    private List<AlbumPhoto> albumPhotoList = new ArrayList<>();
 
     @Setter
     @Transient
