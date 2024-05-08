@@ -51,6 +51,12 @@ public interface AlbumApi {
     ResponseEntity<?> removeAlbum(User user, GroupAlbumParamDTO paramDTO);
 
     @Operation(summary = "기록 사진 리스트", security = @SecurityRequirement(name = "access-token"))
+    @RequestBody(content = @Content(schemaProperties = {
+            @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="albumId", schema = @Schema(implementation = Long.class)),
+    }))
     @ApiResponse(responseCode = "200", description = "successful operation", useReturnTypeSchema = true)
     ResponseEntity<?> photos(User user, Map<String, Object> param);
 
