@@ -4,6 +4,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
+import com.google.gson.Gson;
 import com.tripsnap.api.auth.login.LoginUserDetailsService;
 import com.tripsnap.api.auth.logout.JWTLogoutHandler;
 import com.tripsnap.api.auth.redis.RedisTestConfig;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -164,12 +166,15 @@ class JWTFilterTest {
                     Assertions.assertEquals(resultResponse.getHeader(HttpHeaders.WWW_AUTHENTICATE), "Refresh-Token");
                 });
 
+        Map<String,String> body = Map.of("grant_type","refresh_token", "token", refreshToken);
 
         // refresh 요청
         // accessToken 재발급
         mvc
                 .perform(
-                        post("/refresh").param("grant_type","refresh_token").param("token", refreshToken)
+                        post("/refresh")
+                                .content(new Gson().toJson(body))
+                                .contentType(MediaType.APPLICATION_JSON)
                                 .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().isOk())
@@ -208,11 +213,14 @@ class JWTFilterTest {
                 });
 
 
+        Map<String,String> body = Map.of("grant_type","refresh_token", "token", refreshToken);
         // refresh 요청
         // refreshToken 만료로 인해 재발급 X
         mvc
                 .perform(
-                        post("/refresh").param("grant_type","refresh_token").param("token", refreshToken)
+                        post("/refresh")
+                                .content(new Gson().toJson(body))
+                                .contentType(MediaType.APPLICATION_JSON)
                                 .cookie(response.getCookie("access-token"))
                 )
                 .andExpect(status().is4xxClientError())

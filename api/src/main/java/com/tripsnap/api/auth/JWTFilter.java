@@ -1,9 +1,13 @@
 package com.tripsnap.api.auth;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tripsnap.api.auth.exception.AccessTokenExpiredException;
 import com.tripsnap.api.auth.login.JWTAuthenticationToken;
 import com.tripsnap.api.auth.vo.DecryptedToken;
 import com.tripsnap.api.auth.vo.TokenData;
+import com.tripsnap.api.exception.ServiceException;
+import com.tripsnap.api.filter.MultiReadHttpServletRequest;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -12,18 +16,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 public class JWTFilter extends OncePerRequestFilter {
 
     private TokenService tokenService;
+    private final Gson gson = new Gson();
 
     @Autowired
     private void init(TokenService tokenService) {
@@ -39,8 +44,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if(decryptedToken.expired()) {
                 try {
-                    if(hasRefreshToken(request)) {
-                        String refreshToken = request.getParameter("token");
+                    if(isRefreshRequest(request)) {
+                        Map<String,String> refreshParam= refreshParameterValidation(request);
+                        String refreshToken = refreshParam.get("token");
                         if(tokenService.verifyRefreshToken(refreshToken, decryptedToken.email()) ) {
                             String newAccessToken = tokenService.createAccessToken(decryptedToken.email(), decryptedToken.role());
                             tokenService.setAccessTokenToResponse(newAccessToken, response);
@@ -59,12 +65,20 @@ public class JWTFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean hasRefreshToken(HttpServletRequest request) throws URISyntaxException {
-        String grantType = request.getParameter("grant_type");
-        String token = request.getParameter("token");
+    private boolean isRefreshRequest(HttpServletRequest request) throws URISyntaxException {
+
         URI uri = new URI(request.getRequestURI());
-        return "/refresh".equals(uri.getPath())
-                && "refresh_token".equals(grantType) && StringUtils.hasText(token);
+        return "/refresh".equals(uri.getPath());
+    }
+
+    private Map<String, String> refreshParameterValidation(HttpServletRequest request) {
+        try {
+            MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(request);
+            Map<String, String> map = gson.fromJson(multiReadRequest.getBodyJson(), new TypeToken<Map<String, Object>>(){}.getType());
+            return map;
+        } catch (NullPointerException e) {
+            throw ServiceException.BadRequestException();
+        }
     }
 
     private String getAccessToken(HttpServletRequest request) {
