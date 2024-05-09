@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import reactor.util.function.Tuples;
 
@@ -54,7 +55,8 @@ public class SwaggerConfig {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
 
         http.apply(commonSecurityConfig);
-        http.authorizeHttpRequests(authorize -> authorize
+        http
+                .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                         mvcMatcherBuilder.pattern("/v3/api-docs"),
                         mvcMatcherBuilder.pattern("/v3/api-docs/**"),
@@ -62,7 +64,7 @@ public class SwaggerConfig {
                         mvcMatcherBuilder.pattern("/swagger-ui/**"),
                         mvcMatcherBuilder.pattern("/api-docs*")
                 ).permitAll()
-        );
+        ).securityMatcher(new RegexRequestMatcher("^(?!/v3|/swagger-ui).*", null));
         return http.build();
     }
 
