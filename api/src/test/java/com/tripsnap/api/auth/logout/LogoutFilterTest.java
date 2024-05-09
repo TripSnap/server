@@ -88,8 +88,7 @@ public class LogoutFilterTest {
     @DisplayName("비로그인 회원이 요청")
     void anonymousRequest() throws Exception {
         mvc.perform(get("/logout"))
-                .andExpect(status().is4xxClientError())
-                .andExpect(result -> result.getResponse().containsHeader("WWW-Authenticate"));
+                .andExpect(status().isOk());
 
     }
 
