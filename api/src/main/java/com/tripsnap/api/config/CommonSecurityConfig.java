@@ -57,15 +57,15 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(ERROR).permitAll()
                         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/login")).hasRole(Roles.ANONYMOUS)
+                        .requestMatchers(mvcMatcherBuilder.pattern("/login"),mvcMatcherBuilder.pattern("/join/**")).hasRole(Roles.ANONYMOUS)
                         .anyRequest().hasRole(Roles.USER)
                 )
                 .csrf(csrf -> csrf.disable())
                 .headers(header -> header.frameOptions(options -> options.sameOrigin()))
                 .addFilterBefore(jwtFilter(), AuthorizationFilter.class)
                 .addFilterAfter(loginFilter(providerManager()), AuthorizationFilter.class)
-                .addFilterAfter(logoutFilter(), AuthorizationFilter.class)
                 .addFilterBefore(serviceExceptionHandlingFilter(), JWTFilter.class)
+                .addFilterBefore(logoutFilter(), JWTFilter.class)
                 .logout((logout) ->logout.disable())
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
