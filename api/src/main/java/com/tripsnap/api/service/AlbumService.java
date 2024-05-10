@@ -11,6 +11,7 @@ import com.tripsnap.api.repository.GroupAlbumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AlbumService {
         // TODO: 사진 갯수 체크 필요
         GroupAlbum groupAlbumEntity = groupAlbumMapper.toGroupAlbumEntity(param, member.getId());
         groupAlbumEntity = groupAlbumRepository.save(groupAlbumEntity);
-        groupAlbumRepository.insertPhotosToAlbum(groupAlbumEntity, param.albumPhotoList());
+        groupAlbumRepository.insertPhotosToAlbum(member.getId(), groupAlbumEntity, param.albumPhotoList());
         return ResultDTO.SuccessOrNot(true, null);
     }
 
@@ -72,17 +73,19 @@ public class AlbumService {
     }
 
     // 사진 추가
+    @Transactional
     public ResultDTO.SimpleSuccessOrNot addPhotos(String email, GroupAlbumParamDTO paramDTO, List<AlbumPhotoInsDTO> photos) {
         Member member = permissionCheckService.getMember(email);
         permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
         GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
 
-        groupAlbumRepository.insertPhotosToAlbum(groupAlbum, photos);
+        groupAlbumRepository.insertPhotosToAlbum(member.getId(), groupAlbum, photos);
 
         return ResultDTO.SuccessOrNot(true);
     }
 
     // 사진 삭제
+    @Transactional
     public ResultDTO.SimpleSuccessOrNot deletePhotos(String email, GroupAlbumParamDTO paramDTO, List<Long> photoIds) {
         Member member = permissionCheckService.getMember(email);
         permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());

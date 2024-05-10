@@ -27,7 +27,7 @@ public enum ValidationType {
     }
 
     public enum Collection {
-        NewPhotoList(NewPhotoListType.class, "addPhotos", new TypeToken<List<AlbumPhotoInsDTO>>(){}),
+        AlbumPhotoList(NewPhotoListType.class, "albumPhotoList", new TypeToken<List<AlbumPhotoInsDTO>>(){}),
         RemovePhotoList(RemovePhotoListType.class, "removePhotoIds", new TypeToken<List<Long>>(){});
 
         <T> Collection(Class<?> _class, String property, TypeToken<T> type) {
@@ -86,7 +86,7 @@ public enum ValidationType {
 
     @NoArgsConstructor
     private static class NewPhotoListType {
-        @Size(max=50)
+        @Size(max=50,min = 1)
         private List<AlbumPhotoInsDTO> addPhotos;
 
         private NewPhotoListType(List<String> list) {
@@ -96,7 +96,7 @@ public enum ValidationType {
 
     @NoArgsConstructor
     private static class RemovePhotoListType {
-        @Size(max=50)
+        @Size(max=50,min=1)
         private List<Long> removePhotoIds;
 
         private RemovePhotoListType(List<String> list) {

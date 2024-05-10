@@ -42,7 +42,7 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
 
         JPAQuery<AlbumPhoto> query = new JPAQuery<>(em);
         List<AlbumPhoto> photos = query.select(albumPhoto).from(albumPhoto)
-                .where(albumPhoto.groupAlbum.eq(album))
+                .where(albumPhoto.albumId.eq(album.getId()))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
 
         return photos;
@@ -50,13 +50,15 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
 
     @Transactional
     @Override
-    public void insertPhotosToAlbum(GroupAlbum album, List<AlbumPhotoInsDTO> photos) {
+    public void insertPhotosToAlbum(Long memberId, GroupAlbum album, List<AlbumPhotoInsDTO> photos) {
         QAlbumPhoto albumPhoto = QAlbumPhoto.albumPhoto;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         // TODO: 개선이 필요
         photos.forEach(photoDTO -> {
-            queryFactory.insert(albumPhoto).set(albumPhoto.groupAlbum, album).set(albumPhoto.photo, photoDTO.photo()).execute();
+            queryFactory.insert(albumPhoto)
+                    .columns(albumPhoto.memberId, albumPhoto.albumId, albumPhoto.photo, albumPhoto.thumbnail)
+                    .values(memberId, album.getId(), photoDTO.photo(),photoDTO.photo()).execute();
         });
     }
 
@@ -75,7 +77,7 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
                 .where(groupAlbum.groupId.eq(groupId), groupAlbum.memberId.eq(memberId)).fetch();
 
         queryFactory.update(albumPhoto).setNull(albumPhoto.memberId)
-                .where(albumPhoto.groupAlbum.id.in(albumIds)).execute();
+                .where(albumPhoto.albumId.in(albumIds)).execute();
 
         queryFactory.update(groupAlbum).setNull(groupAlbum.memberId)
                 .where(groupAlbum.id.in(albumIds)).execute();

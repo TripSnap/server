@@ -18,11 +18,11 @@ public class AlbumPhoto extends BaseEntity {
     @Column(name="album_photo_id")
     private Long id;
     private Long memberId;
-    @ManyToOne
-    @JoinColumn(name = "album_id")
-    private GroupAlbum groupAlbum;
+    private Long albumId;
     @Column(nullable = false)
     private String photo;
+    @Column(nullable = false)
+    private String thumbnail;
 
     @Transient
     private Member member;

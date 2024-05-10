@@ -10,6 +10,6 @@ import java.util.List;
 public interface CustomGroupAlbumRepository {
     List<GroupAlbum> getGroupAlbumsByGroupId(Pageable pageable, Long groupId);
     List<AlbumPhoto> getPhotosByAlbumId(Pageable pageable, GroupAlbum album);
-    void insertPhotosToAlbum(GroupAlbum album, List<AlbumPhotoInsDTO> photos);
+    void insertPhotosToAlbum(Long memberId, GroupAlbum album, List<AlbumPhotoInsDTO> photos);
     void updateAlbumAndPhotoForLeave(Long groupId, Long memberId);
 }

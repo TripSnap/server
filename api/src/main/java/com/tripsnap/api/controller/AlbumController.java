@@ -57,16 +57,16 @@ public class AlbumController implements AlbumApi {
     @Override
     public ResponseEntity<?> addPhotos(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         GroupAlbumParamDTO groupAlbumParamDTO = ParameterUtil.validationAndConvert(param, GroupAlbumParamDTO.class);
-        ParameterUtil.validation(param, ValidationType.Collection.NewPhotoList._class);
-        List<AlbumPhotoInsDTO> removeIds = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(
-                param.get(ValidationType.Collection.NewPhotoList.property),
-                ValidationType.Collection.NewPhotoList.type
+        ParameterUtil.validation(param, ValidationType.Collection.AlbumPhotoList._class);
+        List<AlbumPhotoInsDTO> albumPhotoList = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(
+                param.get(ValidationType.Collection.AlbumPhotoList.property),
+                ValidationType.Collection.AlbumPhotoList.type
         );
 
-        return ResponseEntity.ok(albumService.addPhotos(user.getUsername(),groupAlbumParamDTO, removeIds));
+        return ResponseEntity.ok(albumService.addPhotos(user.getUsername(),groupAlbumParamDTO, albumPhotoList));
     }
 
-    @DeleteMapping("/photo")
+    @PostMapping("/photo/remove")
     @Override
     public ResponseEntity<?> removePhotos(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         GroupAlbumParamDTO groupAlbumParamDTO = ParameterUtil.validationAndConvert(param, GroupAlbumParamDTO.class);
