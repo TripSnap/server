@@ -7,6 +7,7 @@ public record GroupAlbumDTO(
         Double longitude,
         String address,
         MemberDTO member,
-        String date
+        String date,
+        Boolean isOwner
 ) {
 }

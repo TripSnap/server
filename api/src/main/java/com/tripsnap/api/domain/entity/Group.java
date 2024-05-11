@@ -22,10 +22,6 @@ public class Group extends BaseEntity {
     @JoinColumn(name="owner_id", referencedColumnName = "member_id")
     private Member owner;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JoinColumn(name="album_id")
-    private List<GroupAlbum> groupAlbums = new ArrayList<>();
-
     // TODO: 이것이.. 최선인가..?
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
     private List<GroupMember> members = new ArrayList<>();

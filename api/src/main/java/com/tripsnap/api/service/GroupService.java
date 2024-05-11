@@ -94,7 +94,7 @@ public class GroupService {
     @Transactional
     public ResultDTO.SimpleSuccessOrNot leaveGroup(String email, Long groupId) {
         Member member = permissionCheckService.getMember(email);
-        permissionCheckService.checkGroupMember(member.getId(), groupId);
+        permissionCheckService.checkGroupMember(groupId, member.getId());
         Optional<Group> optionalGroup = groupRepository.findGroupById(groupId);
 
         if(optionalGroup.isPresent()) {
