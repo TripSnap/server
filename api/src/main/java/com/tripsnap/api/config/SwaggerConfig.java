@@ -64,7 +64,7 @@ public class SwaggerConfig {
                         mvcMatcherBuilder.pattern("/swagger-ui/**"),
                         mvcMatcherBuilder.pattern("/api-docs*")
                 ).permitAll()
-        ).securityMatcher(new RegexRequestMatcher("^(?!/v3|/swagger-ui).*", null));
+        ).securityMatcher(new RegexRequestMatcher("^(?!/v3|/swagger-ui|/api-docs).*", null));
         return http.build();
     }
 

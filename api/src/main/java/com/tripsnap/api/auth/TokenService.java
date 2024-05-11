@@ -79,14 +79,14 @@ public class TokenService {
         try {
             Jwe<Claims> claimsJwe = Jwts.parser().decryptWith(key).build().parseEncryptedClaims(jwe);
             Claims payload = claimsJwe.getPayload();
-            String email = payload.getIssuer();
-            String role = String.valueOf(payload.get("role"));
+
+            String email = Optional.ofNullable(payload.getIssuer()).orElseThrow(() -> new BadCredentialsException("bad jwt token."));
+            String role = Optional.ofNullable(String.valueOf(payload.get("role"))).orElseThrow(() -> new BadCredentialsException("bad jwt token."));
 
             return new DecryptedToken(email, role);
         } catch (ExpiredJwtException e) {
-
-            String email = e.getClaims().getIssuer();
-            String role = e.getClaims().get("role") == null ? null : String.valueOf(e.getClaims().get("role"));
+            String email = Optional.ofNullable(e.getClaims().getIssuer()).orElseThrow(() -> new BadCredentialsException("bad jwt token."));
+            String role = Optional.ofNullable(String.valueOf(e.getClaims().get("role"))).orElseThrow(() -> new BadCredentialsException("bad jwt token."));
 
             return new DecryptedToken(email, role, true);
         } catch (JwtException | IllegalArgumentException e ) {
