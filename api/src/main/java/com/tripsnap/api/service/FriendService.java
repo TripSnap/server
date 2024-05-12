@@ -12,6 +12,7 @@ import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.repository.FriendRepository;
 import com.tripsnap.api.repository.FriendRequestRepository;
 import com.tripsnap.api.repository.MemberRepository;
+import com.tripsnap.api.utils.CombinedPageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,12 +75,9 @@ public class FriendService {
         friendMemberDTOs.addAll(memberMapper.toWatingMemberDTOList(friendRequests));
 
         // 리스트 앞부분의 친구 신청 때문에 값 보정
-        long page = pageable.getPageNumber() - friendRequestsPage.getTotalElements() / pageable.getPageSize();
-        if(page >= 0) {
-            long limit = friendRequests.isEmpty() ? pageable.getPageSize() : pageable.getPageSize() - friendRequests.size();
-            long offset = page == 0 ? 0 : (page*pageable.getPageSize()) - friendRequestsPage.getTotalElements() % pageable.getPageSize();
-
-            List<Friend> friends = friendRepository.getFriendsByMemberId(offset, limit, memberId);
+        CombinedPageable combinedPageable = CombinedPageable.get(pageable, friendRequestsPage);
+        if(combinedPageable.isNextDataFetch()) {
+            List<Friend> friends = friendRepository.getFriendsByMemberId(combinedPageable.getOffset(), combinedPageable.getLimit(), memberId);
             friendMemberDTOs.addAll(memberMapper.toMemberDTOList(friends.stream().map(Friend::getMember).toList()));
         }
 
