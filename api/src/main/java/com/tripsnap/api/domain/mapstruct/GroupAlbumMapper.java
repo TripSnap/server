@@ -17,7 +17,7 @@ import java.util.List;
 )
 public abstract class GroupAlbumMapper {
     @Mapping(source="entity.createdAt", target = "date", dateFormat = "yyyy/MM/dd HH:mm")
-    @Mapping(target="isOwner", expression = "java(email.equals(entity.getMember().getEmail()))")
+    @Mapping(target="isOwner", expression = "java(entity.getMember() == null || email.equals(entity.getMember().getEmail()))")
     public abstract GroupAlbumDTO toDTO(GroupAlbum entity, String email);
 
     public List<GroupAlbumDTO> toDTOList(List<GroupAlbum> entityList,String email) {
