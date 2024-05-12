@@ -76,8 +76,8 @@ public class GroupController implements GroupApi {
     @Override
     public ResponseEntity<?> cancelInvite(@AuthenticationPrincipal User user,@RequestBody Map<String, Object> param) {
         Long id = ParameterUtil.validationAndConvert(param.get("groupId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
-        Long requestMemberId = ParameterUtil.validationAndConvert(param.get("memberId"), ValidationType.PrimitiveWrapper.EntityId, Long.class);
-        return ResponseEntity.ok(groupService.cancelInvite(user.getUsername(), id, requestMemberId));
+        String email = ParameterUtil.validationAndConvert(param.get("email"), ValidationType.PrimitiveWrapper.Email);
+        return ResponseEntity.ok(groupService.cancelInvite(user.getUsername(), id, email));
     }
 
     @GetMapping("/{option:allow|deny}-invite/{group-id:\\d+}")

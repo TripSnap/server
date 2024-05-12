@@ -5,6 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tripsnap.api.domain.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,19 +43,26 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
         return getGroupsByMemberId(null, memberId);
     }
 
-    // 그룹의 멤버들을 가져온다
+
     @Transactional(readOnly = true)
     @Override
     public List<Member> getGroupMembersByGroupId(Pageable pageable, Long groupId) {
+        return getGroupMembersByGroupId(pageable.getOffset(), pageable.getPageSize(), groupId);
+    }
+
+    // 그룹의 멤버들을 가져온다
+    @Transactional(readOnly = true)
+    @Override
+    public List<Member> getGroupMembersByGroupId(long offset, long limit, Long groupId) {
         QGroupMember groupMember = QGroupMember.groupMember;
         QMember member = QMember.member;
 
         // TODO: select 부분 Projections로 변경하기
         JPAQuery<GroupMember> query = new JPAQuery<>(em);
         List<Member> members = query.select(member).from(groupMember)
-                .innerJoin(groupMember)
+                .innerJoin(member)
                 .on(groupMember.id.groupId.eq(groupId), groupMember.id.memberId.eq(member.id))
-                .offset(pageable.getOffset()).limit(pageable.getPageSize())
+                .offset(offset).limit(limit)
                 .fetch();
         return members;
     }
@@ -61,18 +70,21 @@ public class CustomGroupRepositoryImpl implements CustomGroupRepository {
     // 초대 대기중인 회원들을 가져온다
     @Transactional(readOnly = true)
     @Override
-    public List<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId) {
+    public Page<Member> getGroupMemberWaitingListByGroupId(Pageable pageable, Long groupId) {
         QGroupMemberRequest groupMemberRequest = QGroupMemberRequest.groupMemberRequest;
         QMember member = QMember.member;
 
         // TODO: select 부분 Projections로 변경하기
-        JPAQuery<GroupMemberRequest> query = new JPAQuery<>(em);
-        List<Member> members = query.select(member).from(groupMemberRequest)
-                .innerJoin(groupMemberRequest)
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        List<Member> members = queryFactory.select(member).from(groupMemberRequest)
+                .innerJoin(member)
                 .on(groupMemberRequest.id.groupId.eq(groupId), groupMemberRequest.id.memberId.eq(member.id))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize())
                 .fetch();
-        return members;
+        Long count = queryFactory.select(groupMemberRequest.count()).from(groupMemberRequest)
+                .where(groupMemberRequest.id.groupId.eq(groupId))
+                .fetchFirst();
+        return new PageImpl<>(members, pageable, count);
     }
 
     @Transactional

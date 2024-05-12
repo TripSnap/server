@@ -8,7 +8,9 @@ import com.tripsnap.api.domain.mapstruct.GroupMapper;
 import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.exception.ServiceException;
 import com.tripsnap.api.repository.*;
+import com.tripsnap.api.utils.CombinedPageable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -146,32 +148,34 @@ public class GroupService {
         Group group = groupRepository.findGroupById(groupId).get();
         List<MemberDTO> memberDTOS = new ArrayList<>();
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
-        // 그룹장 일때는 초대 대기중인 멤버도 보여준다..
-        // TODO: pageable 조정해야함
-        if(member.getId().equals(group.getOwner().getId())) {
-            List<MemberDTO> waitingMembers = getWaitingGroupMembers(pageable, groupId);
-            memberDTOS.addAll(waitingMembers);
-        }
-        List<Member> members = groupRepository.getGroupMembersByGroupId(pageable, groupId);
-        memberDTOS.addAll(memberMapper.toMemberDTOList(members));
-        return ResultDTO.WithPageData(pageable, memberDTOS);
-    }
 
-    // 초대 대기중인 그룹 멤버 가져오기
-    private List<MemberDTO> getWaitingGroupMembers(Pageable pageable, Long groupId) {
-        List<Member> waitingMembers = groupRepository.getGroupMemberWaitingListByGroupId(pageable, groupId);
-        List<MemberDTO> memberDTOS = memberMapper.toWatingMemberDTOList(waitingMembers);
-        return memberDTOS;
+        // 그룹장 일때는 초대 대기중인 멤버도 보여준다..
+        if(member.getId().equals(group.getOwner().getId())) {
+            Page<Member> waitingMemberPage = groupRepository.getGroupMemberWaitingListByGroupId(pageable, groupId);
+            memberDTOS.addAll( memberMapper.toWatingMemberDTOList(waitingMemberPage.getContent()));
+
+            CombinedPageable combinedPageable = CombinedPageable.get(pageable, waitingMemberPage);
+            if(combinedPageable.isNextDataFetch()) {
+                List<Member> members = groupRepository.getGroupMembersByGroupId(combinedPageable.getOffset(), combinedPageable.getLimit(), groupId);
+                memberDTOS.addAll(memberMapper.toMemberDTOList(members));
+            }
+        } else {
+            List<Member> members = groupRepository.getGroupMembersByGroupId(pageable, groupId);
+            memberDTOS.addAll(memberMapper.toMemberDTOList(members));
+        }
+        return ResultDTO.WithPageData(pageable, memberDTOS);
     }
 
     // 초대 취소
     @Transactional
-    public ResultDTO.SimpleSuccessOrNot cancelInvite(String email, Long groupId, Long requestMemberId) {
+    public ResultDTO.SimpleSuccessOrNot cancelInvite(String email, Long groupId, String requestEmail) {
         Member member = permissionCheckService.getMember(email);
         Optional<Group> optionalGroup = groupRepository.findGroupById(groupId);
+        Member requestMember = permissionCheckService.getMember(requestEmail);
+
         optionalGroup.ifPresentOrElse(group -> {
             if(permissionCheckService.isGroupOwner(group, member)) {
-                GroupMemberId id = GroupMemberId.builder().groupId(groupId).memberId(requestMemberId).build();
+                GroupMemberId id = GroupMemberId.builder().groupId(groupId).memberId(requestMember.getId()).build();
                 groupMemberRequestRepository.deleteById(id);
             } else {
                 throw ServiceException.PermissionDenied();

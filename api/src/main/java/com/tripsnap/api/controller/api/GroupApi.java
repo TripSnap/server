@@ -74,7 +74,7 @@ public interface GroupApi {
     @Operation(summary = "그룹 초대 취소", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
             @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
-            @SchemaProperty(name="memberId", schema = @Schema(implementation = Long.class))
+            @SchemaProperty(name="email", schema = @Schema(implementation = String.class))
     }))
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
