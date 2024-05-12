@@ -3,9 +3,10 @@ package com.tripsnap.api.controller;
 import com.tripsnap.api.controller.api.NotificationApi;
 import com.tripsnap.api.domain.dto.NotificationDTO;
 import com.tripsnap.api.domain.dto.PageDTO;
-import com.tripsnap.api.domain.dto.RemoveNotificationDTO;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import com.tripsnap.api.service.NotificationService;
+import com.tripsnap.api.utils.ParameterUtil;
+import com.tripsnap.api.utils.ValidationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -26,15 +27,16 @@ public class NotificationController implements NotificationApi {
     @GetMapping("/list")
     @Override
     public ResponseEntity<ResultDTO.SimpleWithPageData<List<NotificationDTO>>> notificationList(
-            @AuthenticationPrincipal User user, @Valid @RequestBody PageDTO pageDTO
+            @AuthenticationPrincipal User user, @Valid PageDTO pageDTO
     ) {
         return ResponseEntity.ok(notificationService.notificationList(user.getUsername(), pageDTO));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{notification-id:\\d+}")
     @Override
-    public ResponseEntity<?> remove(@AuthenticationPrincipal User user, @Valid @RequestBody RemoveNotificationDTO param) {
-        return ResponseEntity.ok(notificationService.remove(user.getUsername(), param.ids()));
+    public ResponseEntity<?> remove(@AuthenticationPrincipal User user, @PathVariable("notification-id") Long id) {
+        ParameterUtil.validation(id, ValidationType.PrimitiveWrapper.EntityId);
+        return ResponseEntity.ok(notificationService.remove(user.getUsername(), id));
     }
 
     @GetMapping("/read")

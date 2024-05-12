@@ -7,6 +7,8 @@ import java.util.List;
 
 
 public record GroupAlbumInsDTO (
+        @Size(min=10,max=100)
+        String title,
         @Positive
         Long groupId,
         @Min(-90) @Max(90)

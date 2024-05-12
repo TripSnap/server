@@ -20,7 +20,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         QNotification notification = QNotification.notification;
         JPAQuery<Notification> query = new JPAQuery<>(em);
         List<Notification> notifications = query.select(notification).from(notification)
-                .where(notification.memberId.in(0, memberId))
+                .where(notification.memberId.in(memberId).or(notification.memberId.isNull()))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
         return notifications;
     }

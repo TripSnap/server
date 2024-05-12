@@ -72,7 +72,8 @@ class MapperTest {
 
 
         // DTO list로 변환
-        List<GroupDTO> dtoList = groupMapper.toDTOList(groups);
+        String viewerEmail = member1.getEmail();
+        List<GroupDTO> dtoList = groupMapper.toDTOList(groups, viewerEmail);
 
         Assertions.assertEquals(groups.size(), dtoList.size());
 
@@ -86,7 +87,8 @@ class MapperTest {
                     () -> Assertions.assertEquals(
                             group.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
                             groupDTO.createdAt()
-                    )
+                    ),
+                    () -> Assertions.assertEquals(groupDTO.isOwner(), viewerEmail.equals(group.getOwner().getEmail()))
             );
 
             // group entity의 optMember entity -> memberDTO 검사
@@ -118,7 +120,7 @@ class MapperTest {
     void mappingAnnotationExpressionTest() {
         // 리스트 아닐 때
         Notification notBroadCast = Notification.builder().memberId(1L).build();
-        Notification broadCast = Notification.builder().memberId(0L).build();
+        Notification broadCast = Notification.builder().memberId(null).build();
 
         NotificationDTO notBroadCastDTO = notificationMapper.toNotificationDTO(notBroadCast);
         NotificationDTO broadCastDTO = notificationMapper.toNotificationDTO(broadCast);

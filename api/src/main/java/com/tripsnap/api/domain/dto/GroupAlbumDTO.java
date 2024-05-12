@@ -1,13 +1,13 @@
 package com.tripsnap.api.domain.dto;
 
-import java.util.List;
-
 public record GroupAlbumDTO(
-        Long albumId,
+        Long id,
+        String title,
         Double latitude,
         Double longitude,
         String address,
-        List<AlbumPhotoDTO> albumPhotoList,
-        MemberDTO member
+        MemberDTO member,
+        String date,
+        Boolean isOwner
 ) {
 }

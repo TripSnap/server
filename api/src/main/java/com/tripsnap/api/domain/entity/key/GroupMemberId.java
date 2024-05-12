@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@Getter
 public class GroupMemberId implements Serializable {
 
     @Column(name = "group_id")

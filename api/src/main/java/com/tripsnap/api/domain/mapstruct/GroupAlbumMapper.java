@@ -16,10 +16,14 @@ import java.util.List;
         uses = MemberMapper.class
 )
 public abstract class GroupAlbumMapper {
-    public abstract GroupAlbumDTO toDTO(GroupAlbum entity);
-    public abstract List<GroupAlbumDTO> toDTOList(List<GroupAlbum> entityList);
+    @Mapping(source="entity.createdAt", target = "date", dateFormat = "yyyy/MM/dd HH:mm")
+    @Mapping(target="isOwner", expression = "java(entity.getMember() == null || email.equals(entity.getMember().getEmail()))")
+    public abstract GroupAlbumDTO toDTO(GroupAlbum entity, String email);
 
-    @Mapping(target="albumPhotoList", ignore = true)
+    public List<GroupAlbumDTO> toDTOList(List<GroupAlbum> entityList,String email) {
+        return entityList.stream().map(album -> toDTO(album, email)).toList();
+    };
+
     public abstract GroupAlbum toGroupAlbumEntity(GroupAlbumInsDTO dto, Long memberId);
 
 

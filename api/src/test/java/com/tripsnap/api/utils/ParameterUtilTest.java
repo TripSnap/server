@@ -53,8 +53,8 @@ class ParameterUtilTest {
         }
         @PostMapping("/validation-and-convert/new-photo-list")
         ResponseEntity<?> validationAndConvertNewPhotoList(@RequestBody Map<String, Object> param) {
-            ParameterUtil.validation(param, ValidationType.Collection.NewPhotoList._class);
-            List<AlbumPhotoInsDTO> convert = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(param.get(ValidationType.Collection.NewPhotoList.property), ValidationType.Collection.NewPhotoList.type);
+            ParameterUtil.validation(param, ValidationType.Collection.AlbumPhotoList._class);
+            List<AlbumPhotoInsDTO> convert = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(param.get(ValidationType.Collection.AlbumPhotoList.property), ValidationType.Collection.AlbumPhotoList.type);
             return ResponseEntity.ok(convert);
         }
     }
@@ -77,7 +77,7 @@ class ParameterUtilTest {
         this.mvc.perform(
                 post("/test/validation-and-convert/new-photo-list")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new Gson().toJson(Map.of(ValidationType.Collection.NewPhotoList.property,List.of(new AlbumPhotoInsDTO("testPhoto1"),new AlbumPhotoInsDTO("testPhoto2")))))
+                        .content(new Gson().toJson(Map.of(ValidationType.Collection.AlbumPhotoList.property,List.of(new AlbumPhotoInsDTO("testPhoto1"),new AlbumPhotoInsDTO("testPhoto2")))))
         );
     }
 

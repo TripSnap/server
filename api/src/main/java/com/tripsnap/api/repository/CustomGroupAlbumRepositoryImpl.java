@@ -1,6 +1,5 @@
 package com.tripsnap.api.repository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
@@ -11,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepository{
     @PersistenceContext
@@ -23,15 +24,15 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
         QMember member = QMember.member;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
-        List<Tuple> tupleList = queryFactory.select(groupAlbum, member).from(groupAlbum)
-                .leftJoin(member).on(groupAlbum.groupId.eq(groupId), groupAlbum.memberId.eq(member.id))
+        List<GroupAlbum> groupAlbums = queryFactory.selectFrom(groupAlbum).where(groupAlbum.groupId.eq(groupId))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
 
-        return tupleList.stream().map(tuple -> {
-            GroupAlbum album = tuple.get(groupAlbum);
-            album.setMember(tuple.get(member));
-            return album;
-        }).toList();
+        List<Long> memberIds = groupAlbums.stream().map(GroupAlbum::getMemberId).toList();
+
+        List<Member> members = queryFactory.selectFrom(member).where(member.id.in(memberIds)).fetch();
+        Map<Long, Member> memberMap = members.stream().collect(Collectors.toMap(Member::getId, (m) -> m));
+
+        return groupAlbums.stream().peek((album -> album.setMember(memberMap.get(album.getMemberId())))).toList();
     }
 
     // 앨범 사진 가져오기
@@ -41,7 +42,7 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
 
         JPAQuery<AlbumPhoto> query = new JPAQuery<>(em);
         List<AlbumPhoto> photos = query.select(albumPhoto).from(albumPhoto)
-                .where(albumPhoto.groupAlbum.eq(album))
+                .where(albumPhoto.albumId.eq(album.getId()))
                 .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
 
         return photos;
@@ -49,13 +50,15 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
 
     @Transactional
     @Override
-    public void insertPhotosToAlbum(GroupAlbum album, List<AlbumPhotoInsDTO> photos) {
+    public void insertPhotosToAlbum(Long memberId, GroupAlbum album, List<AlbumPhotoInsDTO> photos) {
         QAlbumPhoto albumPhoto = QAlbumPhoto.albumPhoto;
 
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         // TODO: 개선이 필요
         photos.forEach(photoDTO -> {
-            queryFactory.insert(albumPhoto).set(albumPhoto.groupAlbum, album).set(albumPhoto.photo, photoDTO.photo()).execute();
+            queryFactory.insert(albumPhoto)
+                    .columns(albumPhoto.memberId, albumPhoto.albumId, albumPhoto.photo, albumPhoto.thumbnail)
+                    .values(memberId, album.getId(), photoDTO.photo(),photoDTO.photo()).execute();
         });
     }
 
@@ -74,7 +77,7 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
                 .where(groupAlbum.groupId.eq(groupId), groupAlbum.memberId.eq(memberId)).fetch();
 
         queryFactory.update(albumPhoto).setNull(albumPhoto.memberId)
-                .where(albumPhoto.groupAlbum.id.in(albumIds)).execute();
+                .where(albumPhoto.albumId.in(albumIds)).execute();
 
         queryFactory.update(groupAlbum).setNull(groupAlbum.memberId)
                 .where(groupAlbum.id.in(albumIds)).execute();

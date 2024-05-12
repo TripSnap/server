@@ -4,6 +4,7 @@ public record NotificationDTO(
         Long id,
         String title,
         Boolean isRead,
-        Boolean isBroadCast
+        Boolean isBroadCast,
+        String date
 ) {
 }

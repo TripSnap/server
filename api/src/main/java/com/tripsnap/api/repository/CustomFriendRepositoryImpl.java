@@ -3,13 +3,13 @@ package com.tripsnap.api.repository;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tripsnap.api.domain.entity.Friend;
-import com.tripsnap.api.domain.entity.QFriend;
-import com.tripsnap.api.domain.entity.QFriendRequest;
-import com.tripsnap.api.domain.entity.QMember;
+import com.tripsnap.api.domain.entity.*;
 import com.tripsnap.api.domain.entity.key.MemberFriendId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,5 +83,56 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
                     .or(friend.id.memberId.eq(memberId))
         );
 
+    }
+
+    @Transactional
+    @Override
+    public List<Friend> getFriendsByMemberId(Pageable pageable, Long memberId) {
+        return getFriendsByMemberId(pageable.getOffset(), pageable.getPageSize(), memberId);
+    }
+
+    @Transactional
+    @Override
+    public List<Friend> getFriendsByMemberId(long offset, long limit, Long memberId) {
+        QFriend friend = QFriend.friend;
+        JPAQuery<Friend> query = new JPAQuery<>(em);
+        List<Friend> friends = query.select(friend).from(friend).where(friend.id.memberId.eq(memberId))
+                .offset(offset).limit(limit).fetch();
+
+        return friends;
+    }
+
+    @Transactional
+    @Override
+    public Page<FriendRequest> getFriendSendRequestsByMemberId(Pageable pageable, Long memberId) {
+        QFriendRequest friendRequest = QFriendRequest.friendRequest;
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        List<FriendRequest> friendRequests = queryFactory.select(friendRequest).from(friendRequest).where(friendRequest.id.memberId.eq(memberId))
+                .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
+        Long requestAllCount = queryFactory.select(friendRequest.count()).from(friendRequest).where(friendRequest.id.memberId.eq(memberId)).fetchOne();
+
+        return new PageImpl<>(friendRequests, pageable, requestAllCount);
+    }
+
+    @Transactional
+    @Override
+    public Page<Member> getFriendReceiveRequestsByMemberId(Pageable pageable, Long memberId) {
+        QFriendRequest friendRequest = QFriendRequest.friendRequest;
+        QMember member = QMember.member;
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        Long requestAllCount = queryFactory.select(friendRequest.count()).from(friendRequest).where(friendRequest.id.friendId.eq(memberId)).fetchOne();
+        // memberId에게 온 친구 신청 리스트
+        List<FriendRequest> friendRequests = queryFactory.select(friendRequest).from(friendRequest).where(friendRequest.id.friendId.eq(memberId))
+                .offset(pageable.getOffset()).limit(pageable.getPageSize()).fetch();
+
+        // memberId에게 친구 신청 보낸 id 리스트
+        List<Long> userIds = friendRequests.stream().map(request -> request.getId().getMemberId()).toList();
+
+        List<Member> receiveMembers = queryFactory.select(member).from(member).where(member.id.in(userIds)).fetch();
+
+        return new PageImpl<>(receiveMembers, pageable, requestAllCount);
     }
 }

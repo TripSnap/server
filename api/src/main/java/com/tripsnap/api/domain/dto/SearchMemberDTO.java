@@ -11,5 +11,9 @@ public class SearchMemberDTO {
     private String nickname;
     private String photo;
     @Setter
-    private Boolean isFriend;
+    private Boolean isFriend = false;
+    @Setter
+    private Boolean isReceiveRequest = false;
+    @Setter
+    private Boolean isSendRequest = false;
 }

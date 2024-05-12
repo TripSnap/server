@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tripsnap.api.domain.dto.option.FriendListOption;
 import com.tripsnap.api.exception.ServiceException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -75,6 +76,10 @@ public class ParameterUtil {
                 Long checkValue = Long.valueOf(String.valueOf(value));
                 ParameterUtil.validationAndConvert(checkValue, validationType);
                 return type.cast(checkValue);
+            }
+            if(FriendListOption.class.equals(type)) {
+                String s = ParameterUtil.validationAndConvert(String.valueOf(value), validationType);
+                return type.cast(FriendListOption.valueOf(s));
             }
         } catch (IllegalArgumentException e) {
             throw ServiceException.BadRequestException();

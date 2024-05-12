@@ -2,6 +2,8 @@ package com.tripsnap.api.utils;
 
 import com.google.gson.reflect.TypeToken;
 import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
+import com.tripsnap.api.domain.dto.option.FriendListOption;
+import com.tripsnap.api.validator.ValidEnum;
 import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,8 @@ public enum ValidationType {
     public enum PrimitiveWrapper {
         Email(EmailType.class),
         LoginPassword(LoginPasswordType.class),
-        EntityId(EntityIdType.class);
+        EntityId(EntityIdType.class),
+        FriendListOptionType(FriendListOptionType.class);
 
         public final Class<?> _class;
 
@@ -24,7 +27,7 @@ public enum ValidationType {
     }
 
     public enum Collection {
-        NewPhotoList(NewPhotoListType.class, "addPhotos", new TypeToken<List<AlbumPhotoInsDTO>>(){}),
+        AlbumPhotoList(NewPhotoListType.class, "albumPhotoList", new TypeToken<List<AlbumPhotoInsDTO>>(){}),
         RemovePhotoList(RemovePhotoListType.class, "removePhotoIds", new TypeToken<List<Long>>(){});
 
         <T> Collection(Class<?> _class, String property, TypeToken<T> type) {
@@ -71,9 +74,19 @@ public enum ValidationType {
         }
     }
 
+    @RequiredArgsConstructor
+    private static class FriendListOptionType {
+        @ValidEnum(enumClass = FriendListOption.class)
+        final private String option;
+        @Override
+        public String toString() {
+            return option;
+        }
+    }
+
     @NoArgsConstructor
     private static class NewPhotoListType {
-        @Size(max=50)
+        @Size(max=50,min = 1)
         private List<AlbumPhotoInsDTO> addPhotos;
 
         private NewPhotoListType(List<String> list) {
@@ -83,7 +96,7 @@ public enum ValidationType {
 
     @NoArgsConstructor
     private static class RemovePhotoListType {
-        @Size(max=50)
+        @Size(max=50,min=1)
         private List<Long> removePhotoIds;
 
         private RemovePhotoListType(List<String> list) {

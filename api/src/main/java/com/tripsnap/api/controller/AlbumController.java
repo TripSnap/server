@@ -11,7 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +41,7 @@ public class AlbumController implements AlbumApi {
         return ResponseEntity.ok(albumService.createAlbum(user.getUsername(), param));
     }
 
-    @DeleteMapping
+    @PostMapping("/remove")
     @Override
     public ResponseEntity<?> removeAlbum(@AuthenticationPrincipal User user, @Valid @RequestBody GroupAlbumParamDTO paramDTO) {
         return ResponseEntity.ok(albumService.deleteAlbum(user.getUsername(), paramDTO));
@@ -57,16 +60,16 @@ public class AlbumController implements AlbumApi {
     @Override
     public ResponseEntity<?> addPhotos(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         GroupAlbumParamDTO groupAlbumParamDTO = ParameterUtil.validationAndConvert(param, GroupAlbumParamDTO.class);
-        ParameterUtil.validation(param, ValidationType.Collection.NewPhotoList._class);
-        List<AlbumPhotoInsDTO> removeIds = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(
-                param.get(ValidationType.Collection.NewPhotoList.property),
-                ValidationType.Collection.NewPhotoList.type
+        ParameterUtil.validation(param, ValidationType.Collection.AlbumPhotoList._class);
+        List<AlbumPhotoInsDTO> albumPhotoList = (List<AlbumPhotoInsDTO>) ParameterUtil.convert(
+                param.get(ValidationType.Collection.AlbumPhotoList.property),
+                ValidationType.Collection.AlbumPhotoList.type
         );
 
-        return ResponseEntity.ok(albumService.addPhotos(user.getUsername(),groupAlbumParamDTO, removeIds));
+        return ResponseEntity.ok(albumService.addPhotos(user.getUsername(),groupAlbumParamDTO, albumPhotoList));
     }
 
-    @DeleteMapping("/photo")
+    @PostMapping("/photo/remove")
     @Override
     public ResponseEntity<?> removePhotos(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
         GroupAlbumParamDTO groupAlbumParamDTO = ParameterUtil.validationAndConvert(param, GroupAlbumParamDTO.class);

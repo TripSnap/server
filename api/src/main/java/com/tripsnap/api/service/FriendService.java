@@ -11,11 +11,15 @@ import com.tripsnap.api.domain.entity.key.MemberFriendId;
 import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.repository.FriendRepository;
 import com.tripsnap.api.repository.FriendRequestRepository;
+import com.tripsnap.api.repository.MemberRepository;
+import com.tripsnap.api.utils.CombinedPageable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,28 +28,109 @@ import java.util.Optional;
 public class FriendService {
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
+    private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
     private final PermissionCheckService permissionCheckService;
 
-    // 친구 목록
+
+    /**
+     * 친구 목록을 가져와 DTO로 변환하여 리턴한다.
+     * @param email
+     * @param pageDTO
+     * @return
+     */
     public ResultDTO.SimpleWithPageData<List<MemberDTO>> getFriendList(String email, PageDTO pageDTO) {
         Member member = permissionCheckService.getMember(email);
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
-        List<Friend> friendEntities = friendRepository.findFriendsByMemberId(pageable, member.getId());
-        List<MemberDTO> friends = memberMapper.toMemberDTOList(friendEntities.stream().map(Friend::getMember).toList());
-        return ResultDTO.WithPageData(pageable, friends);
+        List<Friend> friends = friendRepository.getFriendsByMemberId(pageable, member.getId());
+        List<MemberDTO> dtoList = memberMapper.toMemberDTOList(friends.stream().map(Friend::getMember).toList());
+        return ResultDTO.WithPageData(pageable, dtoList);
+    }
+
+    /**
+     * getAllFriendList 의 결과를 DTO로 변환하여 리턴한다.
+     * @param email
+     * @param pageDTO
+     * @return
+     */
+
+    public ResultDTO.SimpleWithPageData<List<MemberDTO>> getAllFriendList(String email, PageDTO pageDTO) {
+        Member member = permissionCheckService.getMember(email);
+        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
+        return ResultDTO.WithPageData(pageable, getAllFriendList(pageable, member.getId()));
+    }
+
+    /**
+     * 친구 신청 받은 리스트와 친구 리스트를 합쳐서 가져온다.
+     * @param pageable
+     * @param memberId
+     * @return
+     */
+    private List<MemberDTO> getAllFriendList(Pageable pageable, long memberId) {
+        List<MemberDTO> friendMemberDTOs = new ArrayList<>();
+
+        Page<Member> friendRequestsPage = friendRepository.getFriendReceiveRequestsByMemberId(pageable, memberId);
+        var friendRequests = friendRequestsPage.getContent();
+
+        friendMemberDTOs.addAll(memberMapper.toWatingMemberDTOList(friendRequests));
+
+        // 리스트 앞부분의 친구 신청 때문에 값 보정
+        CombinedPageable combinedPageable = CombinedPageable.get(pageable, friendRequestsPage);
+        if(combinedPageable.isNextDataFetch()) {
+            List<Friend> friends = friendRepository.getFriendsByMemberId(combinedPageable.getOffset(), combinedPageable.getLimit(), memberId);
+            friendMemberDTOs.addAll(memberMapper.toMemberDTOList(friends.stream().map(Friend::getMember).toList()));
+        }
+
+        return friendMemberDTOs;
+    }
+
+    public ResultDTO.SimpleWithPageData<List<MemberDTO>> getFriendRequestSendList(String email, PageDTO pageDTO) {
+        Member member = permissionCheckService.getMember(email);
+        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
+        Page<FriendRequest> requests = friendRepository.getFriendSendRequestsByMemberId(pageable, member.getId());
+        List<Member> members = requests.getContent().stream().map(FriendRequest::getMember).toList();
+        return ResultDTO.WithPageData(pageable, memberMapper.toMemberDTOList(members));
     }
 
     // 친구 검색
     public ResultDTO.SimpleWithData<SearchMemberDTO> searchMember(String email, String friendEmail) {
-        Member member = permissionCheckService.getMember(email);
-        Member searchMember = permissionCheckService.getMember(friendEmail);
+        SearchMemberDTO searchMemberDTO = null;
 
-        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(searchMember.getId()).build();
-        SearchMemberDTO searchMemberDTO = memberMapper.toSearchMemberDTO(searchMember);
+        if(!email.equals(friendEmail)) {
+            Member member = permissionCheckService.getMember(email);
+            Optional<Member> optSearchMember = memberRepository.findByEmail(friendEmail);
 
-        Optional<Friend> optFriend = friendRepository.findFriendById(memberFriendId);
-        searchMemberDTO.setIsFriend(optFriend.isPresent());
+            if(optSearchMember.isPresent()) {
+                Member searchMember = optSearchMember.get();
+                MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(searchMember.getId()).build();
+                searchMemberDTO = memberMapper.toSearchMemberDTO(searchMember);
+
+
+                boolean friendOption = false;
+
+                Optional<Friend> optFriend = friendRepository.findFriendById(memberFriendId);
+                if(optFriend.isPresent()) {
+                    searchMemberDTO.setIsFriend(true);
+                    friendOption = true;
+                }
+
+                if(!friendOption) {
+                    Optional<FriendRequest> sendRequest = friendRequestRepository.findFriendRequestById(memberFriendId);
+                    if(sendRequest.isPresent()) {
+                        searchMemberDTO.setIsSendRequest(true);
+                        friendOption = true;
+                    }
+                }
+
+                if(!friendOption) {
+                    MemberFriendId receiveRequestId = MemberFriendId.builder().memberId(searchMember.getId()).friendId(member.getId()).build();
+                    Optional<FriendRequest> receiveRequest = friendRequestRepository.findFriendRequestById(receiveRequestId);
+                    if(receiveRequest.isPresent()) {
+                        searchMemberDTO.setIsReceiveRequest(true);
+                    }
+                }
+            }
+        }
         return ResultDTO.WithData(searchMemberDTO);
     }
 
@@ -68,19 +153,29 @@ public class FriendService {
         Member member = permissionCheckService.getMember(email);
         Member friend = permissionCheckService.getMember(friendEmail);
 
-        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(friend.getId()).build();
+        MemberFriendId memberFriendId = MemberFriendId.builder().memberId(friend.getId()).friendId(member.getId()).build();
 
         Optional<FriendRequest> optionalFriendRequest = friendRequestRepository.findFriendRequestById(memberFriendId);
         if(optionalFriendRequest.isPresent()) {
-            MemberFriendId requestId = MemberFriendId.builder().memberId(friend.getId()).friendId(member.getId()).build();
             if(isAllow) {
                 friendRepository.createFriend(member.getId(), friend.getId());
             }
-            friendRequestRepository.deleteById(requestId);
+            friendRequestRepository.deleteById(memberFriendId);
 
             return ResultDTO.SuccessOrNot(true, null);
         }
         return ResultDTO.SuccessOrNot(false, "친구 요청 내역이 존재하지 않습니다.");
+    }
+
+    public ResultDTO.SimpleSuccessOrNot removeSendRequest(String email, String friendEmail) {
+        Member member = permissionCheckService.getMember(email);
+        Member friend = permissionCheckService.getMember(friendEmail);
+
+        MemberFriendId requestId = MemberFriendId.builder().memberId(member.getId()).friendId(friend.getId()).build();
+
+        friendRequestRepository.deleteById(requestId);
+
+        return ResultDTO.SuccessOrNot(true);
     }
 
     // 친구 삭제
