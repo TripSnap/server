@@ -31,7 +31,7 @@ public class AlbumService {
         permissionCheckService.checkGroupMember(groupId, member.getId());
         Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
         List<GroupAlbum> groupAlbums = groupAlbumRepository.getGroupAlbumsByGroupId(pageable, groupId);
-        return ResultDTO.WithPageData(pageable, groupAlbumMapper.toDTOList(groupAlbums));
+        return ResultDTO.WithPageData(pageable, groupAlbumMapper.toDTOList(groupAlbums, email));
     }
 
     // 기록 추가
@@ -51,7 +51,7 @@ public class AlbumService {
         Member member = permissionCheckService.getMember(email);
         GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
 
-        if(permissionCheckService.isAlbumOwner(groupAlbum, member)) {
+        if(permissionCheckService.isAlbumOwner(groupAlbum, member) || groupAlbum.getMemberId() == null) {
             groupAlbumRepository.deleteById(paramDTO.getAlbumId());
             return ResultDTO.SuccessOrNot(true);
         } else {

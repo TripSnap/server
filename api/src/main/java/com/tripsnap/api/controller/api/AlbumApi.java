@@ -62,8 +62,8 @@ public interface AlbumApi {
 
     @Operation(summary = "사진 추가", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
-            @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
-            @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="albumId", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="addPhotos", array = @ArraySchema(schema = @Schema(implementation = AlbumPhotoInsDTO.class)))
     }))
     @ApiResponse(responseCode = "200", description = "successful operation",
@@ -73,8 +73,8 @@ public interface AlbumApi {
 
     @Operation(summary = "사진 삭제", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {
-            @SchemaProperty(name="page", schema = @Schema(implementation = Long.class)),
-            @SchemaProperty(name="pagePerCnt", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="groupId", schema = @Schema(implementation = Long.class)),
+            @SchemaProperty(name="albumId", schema = @Schema(implementation = Long.class)),
             @SchemaProperty(name="removePhotoIds", array = @ArraySchema(schema = @Schema(implementation = Long.class)))
     }))
     @ApiResponse(responseCode = "200", description = "successful operation",
