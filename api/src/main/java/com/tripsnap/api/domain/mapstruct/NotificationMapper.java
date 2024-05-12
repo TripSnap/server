@@ -12,6 +12,7 @@ import java.util.List;
 public abstract class NotificationMapper {
     public abstract List<NotificationDTO> toDTOList(List<Notification> source);
 
-    @Mapping(target="isBroadCast", expression = "java(source.getMemberId() == 0)")
+    @Mapping(target="isBroadCast", expression = "java(source.getMemberId() == null)")
+    @Mapping(target="date", source="createdAt", dateFormat = "yyyy/MM/dd HH:mm")
     public abstract NotificationDTO toNotificationDTO(Notification source);
 }

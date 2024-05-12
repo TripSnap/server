@@ -1,7 +1,6 @@
 package com.tripsnap.api.controller.api;
 
 import com.tripsnap.api.domain.dto.PageDTO;
-import com.tripsnap.api.domain.dto.RemoveNotificationDTO;
 import com.tripsnap.api.domain.dto.ResultDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -29,7 +28,7 @@ public interface NotificationApi {
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "알람 삭제", security = @SecurityRequirement(name = "access-token"))
-    ResponseEntity<?> remove(User user, RemoveNotificationDTO param);
+    ResponseEntity<?> remove(User user, Long id);
     @ApiResponse(responseCode = "200", description = "successful operation",
             content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class)))
     @Operation(summary = "알람 읽음처리", security = @SecurityRequirement(name = "access-token"))

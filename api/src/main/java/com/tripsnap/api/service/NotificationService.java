@@ -10,6 +10,7 @@ import com.tripsnap.api.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,10 @@ public class NotificationService {
     }
 
     // 알림 삭제
-    public ResultDTO.SimpleSuccessOrNot remove(String email, List<Long> ids) {
+    @Transactional
+    public ResultDTO.SimpleSuccessOrNot remove(String email, Long id) {
         Member member = permissionCheckService.getMember(email);
-        notificationRepository.deleteByMemberIdAndIdIn(member.getId(), ids);
+        notificationRepository.deleteByMemberIdAndId(member.getId(), id);
         return ResultDTO.SuccessOrNot(true);
     }
 

@@ -120,7 +120,7 @@ class MapperTest {
     void mappingAnnotationExpressionTest() {
         // 리스트 아닐 때
         Notification notBroadCast = Notification.builder().memberId(1L).build();
-        Notification broadCast = Notification.builder().memberId(0L).build();
+        Notification broadCast = Notification.builder().memberId(null).build();
 
         NotificationDTO notBroadCastDTO = notificationMapper.toNotificationDTO(notBroadCast);
         NotificationDTO broadCastDTO = notificationMapper.toNotificationDTO(broadCast);
