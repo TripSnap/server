@@ -98,3 +98,15 @@ sourceSets {
 clean {
     delete file(querydslDir)
 }
+
+def profiles = 'local,exportApiDocs'
+
+tasks.register('exportApiDocs') {
+    group='other'
+    bootRun.configure {
+        systemProperty 'spring.profiles.active', profiles
+        systemProperty 'logging.level.root', 'error'
+        systemProperty 'spring.jpa.show-sql', false
+    }
+    dependsOn bootRun
+}
