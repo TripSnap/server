@@ -8,9 +8,12 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,8 +22,11 @@ import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import reactor.util.function.Tuples;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
+@Profile({"local","exportApiDocs"})
 @ConditionalOnProperty(
         name = {"springdoc.swagger-ui.enabled"},
         havingValue = "true"
@@ -35,9 +41,16 @@ import java.util.List;
         in = SecuritySchemeIn.COOKIE
 )
 public class SwaggerConfig {
-
     @Autowired
-    ApplicationContext context;
+    private ApplicationContext context;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void exportApiDocs() throws URISyntaxException, IOException {
+        if(context.getEnvironment().acceptsProfiles("exportApiDocs")) {
+            ExportApiDocs.run();
+            System.exit(SpringApplication.exit(context, () -> (0)));
+        }
+    }
 
     @Bean
     @Primary
@@ -64,7 +77,7 @@ public class SwaggerConfig {
                         mvcMatcherBuilder.pattern("/swagger-ui/**"),
                         mvcMatcherBuilder.pattern("/api-docs*")
                 ).permitAll()
-        ).securityMatcher(new RegexRequestMatcher("^(?!/v3|/swagger-ui|/api-docs).*", null));
+        ).securityMatcher(new RegexRequestMatcher("^(?!/v3|/swagger-ui|/api-docs|/export-api-docs).*", null));
         return http.build();
     }
 
