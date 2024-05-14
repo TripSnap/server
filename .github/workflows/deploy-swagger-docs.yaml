@@ -1,9 +1,14 @@
 name: deploy-swagger-docs
 run-name: Distributing API document
+defaults:
+  run:
+    working-directory: api-docs
 on:
   push:
     branches:
       - deploy-docs
+    paths:
+      - "api-docs/**"
 jobs:
   package-install-and-build:
     runs-on: ubuntu-latest
