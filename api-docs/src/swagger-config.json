@@ -1,0 +1,11 @@
+{
+  "configUrl": "/v3/api-docs/swagger-config",
+  "defaultModelExpandDepth": "5",
+  "defaultModelsExpandDepth": "5",
+  "filter": "true",
+  "oauth2RedirectUrl": "http://localhost:8080/swagger-ui/oauth2-redirect.html",
+  "showCommonExtensions": true,
+  "supportedSubmitMethods": "[]",
+  "url": "/v3/api-docs",
+  "validatorUrl": ""
+}

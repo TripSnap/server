@@ -1,0 +1,3032 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "tags": [
+    {
+      "name": "notification",
+      "description": "알람 및 공지 관련 기능"
+    },
+    {
+      "name": "album",
+      "description": "그룹 기록 기능"
+    },
+    {
+      "name": "group",
+      "description": "그룹과 관련된 API"
+    },
+    {
+      "name": "join",
+      "description": "회원가입, 계정찾기 등"
+    },
+    {
+      "name": "auth",
+      "description": "로그인, 로그아웃, 토큰 갱신"
+    },
+    {
+      "name": "account",
+      "description": "계정과 관련된 API"
+    },
+    {
+      "name": "friend",
+      "description": "친구 기능"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "description": "로그인",
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "로그인",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "Refresh-Token": {
+                "description": "refresh token",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Set-Cookie": {
+                "description": "access-token\u003d{token}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {}
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/logout": {
+      "description": "로그아웃",
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "로그아웃",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {}
+          },
+          "401": {
+            "description": "access token 만료",
+            "content": {}
+          },
+          "401 ": {
+            "description": "로그인 필요",
+            "content": {}
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "토큰 갱신",
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant_type": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              },
+              "example": {
+                "grant_type": "refresh_token",
+                "token": "{token}"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "Authorization": {
+                "description": "access token",
+                "style": "simple"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/join": {
+      "post": {
+        "tags": [
+          "join"
+        ],
+        "summary": "회원가입",
+        "operationId": "join",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid status value"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        }
+      }
+    },
+    "/join/verify-code": {
+      "post": {
+        "tags": [
+          "join"
+        ],
+        "summary": "이메일 코드 인증",
+        "operationId": "verifyCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/join/check-email": {
+      "post": {
+        "tags": [
+          "join"
+        ],
+        "summary": "이메일 중복체크",
+        "operationId": "checkEmail",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid status value"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        }
+      }
+    },
+    "/group": {
+      "post": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 생성",
+        "operationId": "addGroup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupInsDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/members": {
+      "post": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 멤버 리스트",
+        "operationId": "groupMembers",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "pagePerCnt": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/cancel-invite": {
+      "post": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 초대 취소",
+        "operationId": "cancelInvite",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/{option}-request": {
+      "post": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 수락 또는 거절",
+        "operationId": "processRequest",
+        "parameters": [
+          {
+            "name": "option",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "allow",
+                "deny"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/send-request": {
+      "post": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 신청",
+        "operationId": "sendRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/send-request/remove": {
+      "post": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 신청 삭제",
+        "operationId": "removeSendRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/search": {
+      "post": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 검색",
+        "operationId": "search",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SearchMemberDTO"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/remove": {
+      "post": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 삭제",
+        "operationId": "remove",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "기록 추가",
+        "operationId": "addAlbum",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupAlbumInsDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/remove": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "기록 삭제",
+        "operationId": "removeAlbum",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GroupAlbumParamDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/photo": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "사진 추가",
+        "operationId": "addPhotos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "albumId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "addPhotos": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/AlbumPhotoInsDTO"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/photo/remove": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "사진 삭제",
+        "operationId": "removePhotos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "albumId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "removePhotoIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/photo/list": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "기록 사진 리스트",
+        "operationId": "photos",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "pagePerCnt": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "albumId": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListAlbumPhotoDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/list": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "기록 목록",
+        "operationId": "getAlbums",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "pagePerCnt": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "albumId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "groupId": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupAlbumDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/account/find": {
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "계정 찾기",
+        "operationId": "find",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        }
+      }
+    },
+    "/account/user": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "회원 정보 가져오기",
+        "operationId": "getUserData",
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "account"
+        ],
+        "summary": "회원 정보 변경",
+        "operationId": "updateData",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberEditDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/account/user/password": {
+      "patch": {
+        "tags": [
+          "account"
+        ],
+        "summary": "회원 비밀번호 변경",
+        "operationId": "updatePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberPasswordEditDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/testToken": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "testToken",
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        }
+      }
+    },
+    "/notification/read": {
+      "get": {
+        "tags": [
+          "notification"
+        ],
+        "summary": "알람 읽음처리",
+        "operationId": "read",
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/notification/list": {
+      "get": {
+        "tags": [
+          "notification"
+        ],
+        "summary": "알람 리스트",
+        "operationId": "notificationList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0.0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pagePerCnt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "maximum": 100.0,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListNotificationDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/notification/check-new": {
+      "get": {
+        "tags": [
+          "notification"
+        ],
+        "summary": "새로운 알람 있는지 확인",
+        "operationId": "checkNewNotification",
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "existed": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/{option}-invite/{group-id}": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 초대 수락 및 거절",
+        "operationId": "processInvite",
+        "parameters": [
+          {
+            "name": "option",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "allow",
+                "deny"
+              ]
+            }
+          },
+          {
+            "name": "group-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessOrNot"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/{group-id}": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 한개만 가져오기",
+        "operationId": "group",
+        "parameters": [
+          {
+            "name": "group-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 삭제",
+        "operationId": "removeGroup",
+        "parameters": [
+          {
+            "name": "group-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/list": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "회원이 가입한 그룹 리스트",
+        "operationId": "groups",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0.0,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pagePerCnt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "maximum": 100.0,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/leave/{group-id}": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 탈퇴",
+        "operationId": "leaveGroup",
+        "parameters": [
+          {
+            "name": "group-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/group/invite/list": {
+      "get": {
+        "tags": [
+          "group"
+        ],
+        "summary": "그룹 초대 목록",
+        "operationId": "inviteList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0.0,
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagePerCnt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "maximum": 100.0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupMemberRequestDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/send-request/list": {
+      "get": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "보낸 친구 신청 목록",
+        "operationId": "friendSendRequestList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "minimum": 0.0,
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagePerCnt",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "maximum": 100.0,
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/friend/list": {
+      "get": {
+        "tags": [
+          "friend"
+        ],
+        "summary": "친구 목록",
+        "operationId": "friendList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "pagePerCnt",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "option",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "active"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/account/leave": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "회원 탈퇴",
+        "operationId": "leave",
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/notification/{notification-id}": {
+      "delete": {
+        "tags": [
+          "notification"
+        ],
+        "summary": "알람 삭제",
+        "operationId": "remove_1",
+        "parameters": [
+          {
+            "name": "notification-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "JoinDTO": {
+        "required": [
+          "email",
+          "nickname",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 50.0,
+            "minLength": 1.0,
+            "type": "string"
+          },
+          "password": {
+            "pattern": "^(?\u003d.*[a-zA-Z])(?\u003d.*[0-9]).{12,100}$",
+            "type": "string"
+          },
+          "nickname": {
+            "pattern": "^[a-zA-Z가-힣][0-9a-zA-Z가-힣]{4,19}$",
+            "type": "string"
+          }
+        }
+      },
+      "SuccessOrNot": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "VerifyCodeDTO": {
+        "required": [
+          "code",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "code": {
+            "maxLength": 50.0,
+            "minLength": 10.0,
+            "type": "string"
+          }
+        }
+      },
+      "SimpleSuccessOrNot": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GroupInsDTO": {
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 100.0,
+            "minLength": 10.0,
+            "type": "string"
+          },
+          "memberEmails": {
+            "maxItems": 19.0,
+            "minItems": 0.0,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "MemberDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "photo": {
+            "type": "string"
+          },
+          "joinDate": {
+            "type": "string"
+          },
+          "isWaiting": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SimpleWithPageDataListMemberDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MemberDTO"
+            }
+          }
+        }
+      },
+      "SearchMemberDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "photo": {
+            "type": "string"
+          },
+          "isFriend": {
+            "type": "boolean"
+          },
+          "isReceiveRequest": {
+            "type": "boolean"
+          },
+          "isSendRequest": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AlbumPhotoInsDTO": {
+        "required": [
+          "photo"
+        ],
+        "type": "object",
+        "properties": {
+          "photo": {
+            "type": "string"
+          }
+        }
+      },
+      "GroupAlbumInsDTO": {
+        "required": [
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 100.0,
+            "minLength": 10.0,
+            "type": "string"
+          },
+          "groupId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "latitude": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "maxLength": 100.0,
+            "minLength": 0.0,
+            "type": "string"
+          },
+          "albumPhotoList": {
+            "maxItems": 50.0,
+            "minItems": 0.0,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlbumPhotoInsDTO"
+            }
+          }
+        }
+      },
+      "GroupAlbumParamDTO": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "minimum": 1.0,
+            "type": "integer",
+            "format": "int64"
+          },
+          "albumId": {
+            "minimum": 1.0,
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AlbumPhotoDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "photo": {
+            "type": "string"
+          }
+        }
+      },
+      "SimpleWithPageDataListAlbumPhotoDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlbumPhotoDTO"
+            }
+          }
+        }
+      },
+      "GroupAlbumDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "address": {
+            "type": "string"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberDTO"
+          },
+          "date": {
+            "type": "string"
+          },
+          "isOwner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SimpleWithPageDataListGroupAlbumDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupAlbumDTO"
+            }
+          }
+        }
+      },
+      "MemberEditDTO": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "pattern": "^[a-zA-Z가-힣][0-9a-zA-Z가-힣]{4,19}$",
+            "type": "string"
+          },
+          "photo": {
+            "type": "string"
+          }
+        }
+      },
+      "MemberPasswordEditDTO": {
+        "required": [
+          "newPassword",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "password": {
+            "maxLength": 100.0,
+            "minLength": 1.0,
+            "type": "string"
+          },
+          "newPassword": {
+            "pattern": "^(?\u003d.*[a-zA-Z])(?\u003d.*[0-9]).{12,100}$",
+            "type": "string"
+          }
+        }
+      },
+      "NotificationDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "isRead": {
+            "type": "boolean"
+          },
+          "isBroadCast": {
+            "type": "boolean"
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      },
+      "SimpleWithPageDataListNotificationDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NotificationDTO"
+            }
+          }
+        }
+      },
+      "GroupDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/MemberDTO"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "isOwner": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SimpleWithPageDataListGroupDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupDTO"
+            }
+          }
+        }
+      },
+      "GroupMemberRequestDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/MemberDTO"
+          },
+          "expiredAt": {
+            "type": "string"
+          }
+        }
+      },
+      "SimpleWithPageDataListGroupMemberRequestDTO": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupMemberRequestDTO"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "access-token": {
+        "type": "http",
+        "description": "access token cookie",
+        "in": "cookie",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
