@@ -14,4 +14,5 @@ const ui = SwaggerUI({
   spec,
   dom_id: "#swagger",
   ...urlFilter(config),
+  supportedSubmitMethods: [],
 });
