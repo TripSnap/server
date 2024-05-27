@@ -22,7 +22,6 @@ public class Group extends BaseEntity {
     @JoinColumn(name="owner_id", referencedColumnName = "member_id")
     private Member owner;
 
-    // TODO: 이것이.. 최선인가..?
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
     private List<GroupMember> members = new ArrayList<>();
 
@@ -37,8 +36,4 @@ public class Group extends BaseEntity {
         this.owner = owner;
         this.memberRequests = memberRequests;
     }
-
-    //    @OneToMany(cascade = CascadeType.ALL)
-//    @JoinColumn(name="group_id")
-//    private List<GroupMemberRequest> memberRequests = new ArrayList<>();
 }

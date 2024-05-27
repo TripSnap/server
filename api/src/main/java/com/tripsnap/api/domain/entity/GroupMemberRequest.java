@@ -18,11 +18,13 @@ import java.time.LocalDateTime;
 public class GroupMemberRequest extends BaseEntity {
     @EmbeddedId
     GroupMemberId id;
-    @OneToOne(fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn(name = "member_id")
+    @MapsId("memberId")
+    @JoinColumn(name="memberId", referencedColumnName = "member_id")
+    @ManyToOne
     private Member member;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="group_id",insertable=false, updatable=false)
+    @MapsId("groupId")
+    @JoinColumn(name="groupId", referencedColumnName = "group_id",insertable=false, updatable=false)
+    @ManyToOne
     private Group group;
 
     public LocalDateTime getExpireDate() {

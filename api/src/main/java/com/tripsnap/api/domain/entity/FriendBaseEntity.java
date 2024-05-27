@@ -17,7 +17,12 @@ import lombok.experimental.SuperBuilder;
 public abstract class FriendBaseEntity extends BaseEntity {
     @EmbeddedId
     private MemberFriendId id;
+
+    /**
+     * friend_id에 해당하는 Member
+     */
+    @MapsId("friendId")
     @OneToOne(fetch = FetchType.EAGER)
-    @PrimaryKeyJoinColumn(name = "friend_id")
+    @JoinColumn(name = "friendId", referencedColumnName = "member_id")
     private Member member;
 }

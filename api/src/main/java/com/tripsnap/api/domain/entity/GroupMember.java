@@ -16,10 +16,12 @@ import lombok.NoArgsConstructor;
 public class GroupMember extends BaseEntity {
     @EmbeddedId
     private GroupMemberId id;
-    @OneToOne
-    @PrimaryKeyJoinColumn(name = "member_id")
-    private Member member;
+    @MapsId("memberId")
+    @JoinColumn(name="memberId", referencedColumnName = "member_id")
     @ManyToOne
-    @JoinColumn(name="group_id",insertable=false, updatable=false)
+    private Member member;
+    @MapsId("groupId")
+    @JoinColumn(name="groupId", referencedColumnName = "group_id")
+    @ManyToOne
     private Group group;
 }

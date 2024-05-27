@@ -37,13 +37,13 @@ public class CustomFriendRepositoryImpl implements CustomFriendRepository {
 
     @Transactional
     @Override
-    public Boolean createFriend(long memberId, long friendId) {
+    public Boolean createFriend(Member member, Member friend) {
 
-        MemberFriendId id1 = MemberFriendId.builder().memberId(memberId).friendId(friendId).build();
-        MemberFriendId id2 = MemberFriendId.builder().memberId(friendId).friendId(memberId).build();
+        MemberFriendId id1 = MemberFriendId.builder().memberId(member.getId()).friendId(friend.getId()).build();
+        MemberFriendId id2 = MemberFriendId.builder().memberId(friend.getId()).friendId(member.getId()).build();
 
-        Friend friend1 = Friend.builder().id(id1).build();
-        Friend friend2 = Friend.builder().id(id2).build();
+        Friend friend1 = Friend.builder().id(id1).member(friend).build();
+        Friend friend2 = Friend.builder().id(id2).member(member).build();
 
         em.persist(friend1);
         em.persist(friend2);

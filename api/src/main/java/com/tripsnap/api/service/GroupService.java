@@ -64,6 +64,8 @@ public class GroupService {
         // 그룹 장은 바로 그룹 멤버에 추가
         GroupMember owner = GroupMember.builder()
                 .id(GroupMemberId.builder().groupId(group.getId()).memberId(member.getId()).build())
+                .group(group)
+                .member(member)
                 .build();
         groupMemberRepository.save(owner);
 
@@ -76,7 +78,10 @@ public class GroupService {
                                 .groupId(group.getId())
                                 .memberId(friend.getId().getFriendId())
                                 .build()
-                        ).build())
+                        )
+                        .member(friend.getMember())
+                        .group(group)
+                        .build())
                 .toList();
         group.setMemberRequests(groupMemberRequests);
 
@@ -190,12 +195,13 @@ public class GroupService {
     @Transactional
     public ResultDTO.SuccessOrNot processInvite(String email, Long groupId, boolean isAllow) {
         Member member = permissionCheckService.getMember(email);
+        Group group = groupRepository.findGroupById(groupId).orElseThrow(ServiceException::BadRequestException);
         GroupMemberId id = GroupMemberId.builder().groupId(groupId).memberId(member.getId()).build();
         Optional<GroupMemberRequest> request = groupMemberRequestRepository.findById(id);
         if(request.isPresent()) {
             groupMemberRequestRepository.deleteById(id);
             if(isAllow) {
-                GroupMember groupMember = GroupMember.builder().id(id).build();
+                GroupMember groupMember = GroupMember.builder().id(id).group(group).member(member).build();
                 groupMemberRepository.save(groupMember);
             }
             return ResultDTO.SuccessOrNot(true, null);

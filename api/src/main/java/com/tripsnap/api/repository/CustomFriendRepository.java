@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CustomFriendRepository {
     List<Friend> getFriendListByEmail(long memberId, List<String> emails);
-    Boolean createFriend(long memberId, long friendId);
+    Boolean createFriend(Member member, Member friend);
     Boolean removeFriend(long memberId, long friendId);
     void removeFriendAndRequestAll(long memberId);
     List<Friend> getFriendsByMemberId(Pageable pageable, Long memberId);

@@ -140,7 +140,7 @@ public class FriendService {
         Member searchMember = permissionCheckService.getMember(friendEmail);
 
         MemberFriendId memberFriendId = MemberFriendId.builder().memberId(member.getId()).friendId(searchMember.getId()).build();
-        FriendRequest request = FriendRequest.builder().id(memberFriendId).build();
+        FriendRequest request = FriendRequest.builder().id(memberFriendId).member(searchMember).build();
 
         friendRequestRepository.save(request);
         return ResultDTO.SuccessOrNot(true);
@@ -158,7 +158,7 @@ public class FriendService {
         Optional<FriendRequest> optionalFriendRequest = friendRequestRepository.findFriendRequestById(memberFriendId);
         if(optionalFriendRequest.isPresent()) {
             if(isAllow) {
-                friendRepository.createFriend(member.getId(), friend.getId());
+                friendRepository.createFriend(member, friend);
             }
             friendRequestRepository.deleteById(memberFriendId);
 

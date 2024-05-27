@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -62,22 +63,26 @@ public class FriendRequestTest {
     @Test
     @DisplayName("복합 키 테스트")
     void key() {
-        Member member1 = em.find(Member.class, member1Id);
-        Member member2 = em.find(Member.class, member2Id);
-        Member member3 = em.find(Member.class, member3Id);
+        Map<Long, Member> memberMap = Map.of(
+                member1Id, em.find(Member.class, member1Id),
+                member2Id, em.find(Member.class, member2Id),
+                member3Id, em.find(Member.class, member3Id)
+        );
 
-        Assertions.assertNotNull(member1);
-        Assertions.assertNotNull(member2);
-        Assertions.assertNotNull(member3);
+        Assertions.assertNotNull(memberMap.get(member1Id));
+        Assertions.assertNotNull(memberMap.get(member2Id));
+        Assertions.assertNotNull(memberMap.get(member3Id));
 
 
         // 친구 요청 데이터 만들기
         List<MemberFriendId> ids = List.of(
-                MemberFriendId.builder().memberId(member1.getId()).friendId(member3.getId()).build(),
-                MemberFriendId.builder().memberId(member2.getId()).friendId(member1.getId()).build()
+                MemberFriendId.builder().memberId(memberMap.get(member1Id).getId()).friendId(memberMap.get(member3Id).getId()).build(),
+                MemberFriendId.builder().memberId(memberMap.get(member2Id).getId()).friendId(memberMap.get(member1Id).getId()).build()
         );
 
-        List<FriendRequest> friends = ids.stream().map(id -> FriendRequest.builder().id(id).build()).collect(Collectors.toList());
+        List<FriendRequest> friends = ids.stream()
+                .map(id -> FriendRequest.builder().id(id).member(memberMap.get(id.getFriendId())).build())
+                .collect(Collectors.toList());
         for(FriendRequest f : friends) {
             em.persist(f);
         }
