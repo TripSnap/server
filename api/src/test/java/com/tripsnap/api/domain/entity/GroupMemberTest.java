@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @DataJpaTest
@@ -60,26 +61,28 @@ class GroupMemberTest {
     @Test
     @DisplayName("복합 키 테스트")
     void key() {
-        Member member1 = em.find(Member.class, member1Id);
-        Member member2 = em.find(Member.class, member2Id);
+        Map<Long, Member> memberMap = Map.of(
+                member1Id, em.find(Member.class, member1Id),
+                member2Id, em.find(Member.class, member2Id)
+        );
         Group group = em.find(Group.class, groupId);
 
-        Assertions.assertNotNull(member1);
-        Assertions.assertNotNull(member2);
+        Assertions.assertNotNull(memberMap.get(member1Id));
+        Assertions.assertNotNull(memberMap.get(member2Id));
 
 
         // 그룹 멤버 데이터 만들기
         List<GroupMemberId> ids = List.of(
-                GroupMemberId.builder().groupId(groupId).memberId(member1.getId()).build(),
-                GroupMemberId.builder().groupId(groupId).memberId(member2.getId()).build()
+                GroupMemberId.builder().groupId(groupId).memberId(memberMap.get(member1Id).getId()).build(),
+                GroupMemberId.builder().groupId(groupId).memberId(memberMap.get(member2Id).getId()).build()
         );
 
 
-        // 처음에 Group 에 members를 OneToMany로 걸고 joinColumn에 group_id(in GroupMemberId)를 걸어놨떠니
-        // Group의 group_id를 가져온건가? update group_member set group_id = null where group_id = ? 이런 쿼리가 생성됨
-        //
-        List<GroupMember> members = ids.stream().map(id -> GroupMember.builder().id(id).build()).collect(Collectors.toList());
-        ReflectionTestUtils.setField(group,"owner",  member1);
+        Group finalGroup = group;
+        List<GroupMember> members = ids.stream()
+                .map(id -> GroupMember.builder().id(id).group(finalGroup).member(memberMap.get(id.getMemberId())).build())
+                .collect(Collectors.toList());
+        ReflectionTestUtils.setField(group,"owner",  memberMap.get(member1Id));
         ReflectionTestUtils.setField(group,"members",  members);
 
         em.flush();
