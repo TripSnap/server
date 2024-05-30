@@ -1,13 +1,11 @@
 package com.tripsnap.api.service;
 
-import com.tripsnap.api.domain.dto.MemberDTO;
-import com.tripsnap.api.domain.dto.MemberEditDTO;
-import com.tripsnap.api.domain.dto.MemberPasswordEditDTO;
-import com.tripsnap.api.domain.dto.ResultDTO;
+import com.tripsnap.api.domain.dto.*;
 import com.tripsnap.api.domain.entity.Group;
 import com.tripsnap.api.domain.entity.Member;
 import com.tripsnap.api.domain.mapstruct.MemberMapper;
 import com.tripsnap.api.repository.*;
+import com.tripsnap.api.service.aws.PhotoUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +23,7 @@ public class AccountService {
     private final GroupMemberRequestRepository groupMemberRequestRepository;
     private final GroupService groupService;
     private final MemberRepository memberRepository;
+    private final PhotoUploadService photoUploadService;
 
     private final MemberMapper memberMapper;
 
@@ -75,5 +74,14 @@ public class AccountService {
 
     public ResultDTO.SuccessOrNot findUser(String email) {
         return null;
+    }
+
+    public PresignedUrlResultDTO getPresignedURL(String email, RequestPresignedUrlDTO param) {
+        Member member = permissionCheckService.getMember(email);
+        // 사진 이름: user-{memberId}
+        String extension = param.type().replace("image/","");
+        String filename = String.format("user-%010d.%s", member.getId(), extension);
+        String url = photoUploadService.requestPresignedUrl("trip-snap-user", filename);
+        return new PresignedUrlResultDTO(url, filename);
     }
 }

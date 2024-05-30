@@ -1,9 +1,6 @@
 package com.tripsnap.api.controller.api;
 
-import com.tripsnap.api.domain.dto.MemberDTO;
-import com.tripsnap.api.domain.dto.MemberEditDTO;
-import com.tripsnap.api.domain.dto.MemberPasswordEditDTO;
-import com.tripsnap.api.domain.dto.ResultDTO;
+import com.tripsnap.api.domain.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -62,4 +59,10 @@ public interface AccountApi {
             content = @Content(schema = @Schema(implementation = ResultDTO.SuccessOrNot.class))
     )
     ResponseEntity<?> find(Map<String, Object> param);
+
+    @Operation(summary = "유저 사진 업로드 presignedUrl 생성")
+    @ApiResponse(responseCode = "200", description = "successful operation",
+            content = @Content(schema = @Schema(implementation = PresignedUrlResultDTO.class))
+    )
+    ResponseEntity<?> photoUploadAuthority(User user, RequestPresignedUrlDTO param);
 }

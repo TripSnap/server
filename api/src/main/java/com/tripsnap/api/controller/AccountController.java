@@ -3,6 +3,7 @@ package com.tripsnap.api.controller;
 import com.tripsnap.api.controller.api.AccountApi;
 import com.tripsnap.api.domain.dto.MemberEditDTO;
 import com.tripsnap.api.domain.dto.MemberPasswordEditDTO;
+import com.tripsnap.api.domain.dto.RequestPresignedUrlDTO;
 import com.tripsnap.api.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,14 @@ public class AccountController implements AccountApi {
     @Override
     public ResponseEntity<?> find(@RequestBody  Map<String, Object> param) {
         return null;
+    }
+
+
+    @PostMapping("/user/photo/upload-authority")
+    @Override
+    public ResponseEntity<?> photoUploadAuthority(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody RequestPresignedUrlDTO param) {
+        return ResponseEntity.ok(accountService.getPresignedURL(user.getUsername(), param));
     }
 }

@@ -26,7 +26,7 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository{
             updateClause = updateClause.set(qMember.nickname, member.nickname());
         }
 
-        if(StringUtils.hasText(member.photo())) {
+        if(member.photo() != null) {
             hasEditField = true;
             updateClause = updateClause.set(qMember.photo, member.photo());
         }
