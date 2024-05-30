@@ -59,4 +59,11 @@ public class PermissionCheckService {
     public Boolean isAlbumOwner(GroupAlbum album, Member member) {
         return member.getId().equals(album.getMemberId());
     }
+
+    public void checkAlbumAndMember(Long albumId, Long memberId) {
+        boolean checked = groupAlbumRepository.checkAlbumAndMember(albumId, memberId);
+        if(!checked) {
+            throw ServiceException.BadRequestException();
+        }
+    }
 }

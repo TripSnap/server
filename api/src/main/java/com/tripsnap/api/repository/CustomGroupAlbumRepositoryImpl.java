@@ -82,4 +82,19 @@ public class CustomGroupAlbumRepositoryImpl implements CustomGroupAlbumRepositor
         queryFactory.update(groupAlbum).setNull(groupAlbum.memberId)
                 .where(groupAlbum.id.in(albumIds)).execute();
     }
+
+    @Override
+    public boolean checkAlbumAndMember(Long albumId, Long memberId) {
+        QGroupAlbum groupAlbum = QGroupAlbum.groupAlbum;
+        QGroupMember groupMember = QGroupMember.groupMember;
+        QGroup group = QGroup.group;
+
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        GroupMember fetched = queryFactory.select(groupMember).from(groupMember)
+                .join(groupMember.group, group).on(groupMember.member.id.eq(memberId))
+                .join(groupAlbum).on(groupAlbum.id.eq(albumId))
+                .fetchFirst();
+
+        return fetched != null;
+    }
 }

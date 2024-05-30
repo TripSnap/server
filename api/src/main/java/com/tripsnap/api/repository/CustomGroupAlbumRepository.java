@@ -12,4 +12,5 @@ public interface CustomGroupAlbumRepository {
     List<AlbumPhoto> getPhotosByAlbumId(Pageable pageable, GroupAlbum album);
     void insertPhotosToAlbum(Long memberId, GroupAlbum album, List<AlbumPhotoInsDTO> photos);
     void updateAlbumAndPhotoForLeave(Long groupId, Long memberId);
+    boolean checkAlbumAndMember(Long albumId, Long memberId);
 }
