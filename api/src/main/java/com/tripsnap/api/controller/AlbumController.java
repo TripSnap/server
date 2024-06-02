@@ -3,6 +3,7 @@ package com.tripsnap.api.controller;
 import com.tripsnap.api.controller.api.AlbumApi;
 import com.tripsnap.api.domain.dto.*;
 import com.tripsnap.api.service.AlbumService;
+import com.tripsnap.api.service.PhotoService;
 import com.tripsnap.api.utils.ParameterUtil;
 import com.tripsnap.api.utils.ValidationType;
 import jakarta.validation.Valid;
@@ -11,10 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AlbumController implements AlbumApi {
     private final AlbumService albumService;
+    private final PhotoService photoService;
 
     @PostMapping("/list")
     @Override
@@ -53,7 +52,7 @@ public class AlbumController implements AlbumApi {
         PageDTO pageDTO = ParameterUtil.validationAndConvert(param, PageDTO.class);
         GroupAlbumParamDTO groupAlbumParamDTO = ParameterUtil.validationAndConvert(param, GroupAlbumParamDTO.class);
 
-        return ResponseEntity.ok(albumService.getPhotos(user.getUsername(), pageDTO, groupAlbumParamDTO));
+        return ResponseEntity.ok(photoService.getPhotos(user.getUsername(), pageDTO, groupAlbumParamDTO));
     }
 
     @PostMapping("/photo")
@@ -66,7 +65,7 @@ public class AlbumController implements AlbumApi {
                 ValidationType.Collection.AlbumPhotoList.type
         );
 
-        return ResponseEntity.ok(albumService.addPhotos(user.getUsername(),groupAlbumParamDTO, albumPhotoList));
+        return ResponseEntity.ok(photoService.addPhotos(user.getUsername(),groupAlbumParamDTO, albumPhotoList));
     }
 
     @PostMapping("/photo/remove")
@@ -79,6 +78,6 @@ public class AlbumController implements AlbumApi {
                 ValidationType.Collection.RemovePhotoList.type
         );
 
-        return ResponseEntity.ok(albumService.deletePhotos(user.getUsername(),groupAlbumParamDTO, removeIds));
+        return ResponseEntity.ok(photoService.deletePhotos(user.getUsername(),groupAlbumParamDTO, removeIds));
     }
 }

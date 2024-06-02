@@ -59,40 +59,4 @@ public class AlbumService {
         }
     }
 
-
-    // 앨범에서 사진 가져오기
-    public ResultDTO.SimpleWithPageData<List<AlbumPhotoDTO>> getPhotos(String email, PageDTO pageDTO, GroupAlbumParamDTO paramDTO) {
-        Member member = permissionCheckService.getMember(email);
-        permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
-        GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
-
-        Pageable pageable = Pageable.ofSize(pageDTO.pagePerCnt()).withPage(pageDTO.page());
-
-        List<AlbumPhoto> photos = groupAlbumRepository.getPhotosByAlbumId(pageable, groupAlbum);
-        return ResultDTO.WithPageData(pageable, groupAlbumMapper.toAlbumDTOList(photos));
-    }
-
-    // 사진 추가
-    @Transactional
-    public ResultDTO.SimpleSuccessOrNot addPhotos(String email, GroupAlbumParamDTO paramDTO, List<AlbumPhotoInsDTO> photos) {
-        Member member = permissionCheckService.getMember(email);
-        permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
-        GroupAlbum groupAlbum = permissionCheckService.getGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
-
-        groupAlbumRepository.insertPhotosToAlbum(member.getId(), groupAlbum, photos);
-
-        return ResultDTO.SuccessOrNot(true);
-    }
-
-    // 사진 삭제
-    @Transactional
-    public ResultDTO.SimpleSuccessOrNot deletePhotos(String email, GroupAlbumParamDTO paramDTO, List<Long> photoIds) {
-        Member member = permissionCheckService.getMember(email);
-        permissionCheckService.checkGroupMember(paramDTO.getGroupId(), member.getId());
-        permissionCheckService.checkGroupAlbum(paramDTO.getGroupId(), paramDTO.getAlbumId());
-
-        albumPhotoRepository.deleteAllByIdIn(photoIds);
-
-        return ResultDTO.SuccessOrNot(true);
-    }
 }
