@@ -1,9 +1,6 @@
 package com.tripsnap.api.domain.dto;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;
-
-import java.util.List;
 
 
 public record GroupAlbumInsDTO (
@@ -11,13 +8,11 @@ public record GroupAlbumInsDTO (
         String title,
         @Positive
         Long groupId,
-        @Min(-90) @Max(90)
+        @DecimalMax("90.0") @DecimalMin("-90.0")
         Double latitude,
-        @Min(-180) @Max(180)
+        @DecimalMax("180.0") @DecimalMin("-180.0")
         Double longitude,
         @NotBlank @Size(max=100)
-        String address,
-        @Nullable @Size(max=50)
-        List<AlbumPhotoInsDTO> albumPhotoList
+        String address
 ) {
 }

@@ -1,25 +1,22 @@
 package com.tripsnap.api.service;
 
 import com.tripsnap.api.domain.dto.*;
-import com.tripsnap.api.domain.entity.AlbumPhoto;
 import com.tripsnap.api.domain.entity.GroupAlbum;
 import com.tripsnap.api.domain.entity.Member;
 import com.tripsnap.api.domain.mapstruct.GroupAlbumMapper;
 import com.tripsnap.api.exception.ServiceException;
-import com.tripsnap.api.repository.AlbumPhotoRepository;
 import com.tripsnap.api.repository.GroupAlbumRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class AlbumService {
     private final GroupAlbumRepository groupAlbumRepository;
-    private final AlbumPhotoRepository albumPhotoRepository;
 
     private final GroupAlbumMapper groupAlbumMapper;
 
@@ -35,14 +32,12 @@ public class AlbumService {
     }
 
     // 기록 추가
-    public ResultDTO.SuccessOrNot createAlbum(String email, GroupAlbumInsDTO param) {
+    public Map<String, Object> createAlbum(String email, GroupAlbumInsDTO param) {
         Member member = permissionCheckService.getMember(email);
         permissionCheckService.checkGroupMember(param.groupId(), member.getId());
-        // TODO: 사진 갯수 체크 필요
         GroupAlbum groupAlbumEntity = groupAlbumMapper.toGroupAlbumEntity(param, member.getId());
-        groupAlbumEntity = groupAlbumRepository.save(groupAlbumEntity);
-        groupAlbumRepository.insertPhotosToAlbum(member.getId(), groupAlbumEntity, param.albumPhotoList());
-        return ResultDTO.SuccessOrNot(true, null);
+        GroupAlbum saved = groupAlbumRepository.save(groupAlbumEntity);
+        return Map.of("success", true, "albumId", saved.getId());
     }
 
 

@@ -1,9 +1,6 @@
 package com.tripsnap.api.controller.api;
 
-import com.tripsnap.api.domain.dto.AlbumPhotoInsDTO;
-import com.tripsnap.api.domain.dto.GroupAlbumInsDTO;
-import com.tripsnap.api.domain.dto.GroupAlbumParamDTO;
-import com.tripsnap.api.domain.dto.ResultDTO;
+import com.tripsnap.api.domain.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -40,7 +37,10 @@ public interface AlbumApi {
 
     @Operation(summary = "기록 추가", security = @SecurityRequirement(name = "access-token"))
     @ApiResponse(responseCode = "200", description = "successful operation",
-            content = @Content(schema = @Schema(implementation = ResultDTO.SimpleSuccessOrNot.class))
+            content = @Content(schemaProperties = {
+                    @SchemaProperty(name="success", schema = @Schema(implementation = Boolean.class)),
+                    @SchemaProperty(name="albumId", schema = @Schema(implementation = Long.class))
+            })
     )
     ResponseEntity<?> addAlbum(User user, GroupAlbumInsDTO param);
 
@@ -59,6 +59,11 @@ public interface AlbumApi {
     }))
     @ApiResponse(responseCode = "200", description = "successful operation", useReturnTypeSchema = true)
     ResponseEntity<?> photos(User user, Map<String, Object> param);
+
+    @Operation(summary = "s3에 업로드를 위한 presignedURL 가져옴", security = @SecurityRequirement(name = "access-token"))
+    @ApiResponse(responseCode = "200", description = "successful operation",content = @Content(schema = @Schema(implementation = PresignedUrlResultDTO.class)))
+    ResponseEntity<?> photoUploadAuthority(User user ,Long albumId, @RequestBody RequestPresignedUrlDTO param);
+
 
     @Operation(summary = "사진 추가", security = @SecurityRequirement(name = "access-token"))
     @RequestBody(content = @Content(schemaProperties = {

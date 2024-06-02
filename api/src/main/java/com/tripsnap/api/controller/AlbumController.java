@@ -55,6 +55,17 @@ public class AlbumController implements AlbumApi {
         return ResponseEntity.ok(photoService.getPhotos(user.getUsername(), pageDTO, groupAlbumParamDTO));
     }
 
+    @PostMapping("/{album-id:\\d+}/upload-authority")
+    @Override
+    public ResponseEntity<?> photoUploadAuthority(
+            @AuthenticationPrincipal User user,
+            @PathVariable("album-id") Long albumId,
+            @Valid @RequestBody RequestPresignedUrlDTO param) {
+        ParameterUtil.validation(albumId, ValidationType.PrimitiveWrapper.EntityId);
+        return ResponseEntity.ok(photoService.getPresignedURL(user.getUsername(), albumId, param));
+    }
+
+
     @PostMapping("/photo")
     @Override
     public ResponseEntity<?> addPhotos(@AuthenticationPrincipal User user, @RequestBody Map<String, Object> param) {
