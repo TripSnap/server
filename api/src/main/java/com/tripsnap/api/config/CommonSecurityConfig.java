@@ -1,7 +1,6 @@
 package com.tripsnap.api.config;
 
 import com.tripsnap.api.auth.JWTFilter;
-import com.tripsnap.api.auth.Roles;
 import com.tripsnap.api.auth.exception.AuthenticationExceptionHandler;
 import com.tripsnap.api.auth.login.LoginFilter;
 import com.tripsnap.api.auth.login.LoginSuccessHandler;
@@ -44,7 +43,7 @@ public class CommonSecurityConfig implements SecurityConfigurer<DefaultSecurityF
     @Autowired
     ApplicationContext context;
 
-    @Value("${client.url}")
+    @Value("${service.client.url}")
     private String[] clientUrls;
 
     @Override

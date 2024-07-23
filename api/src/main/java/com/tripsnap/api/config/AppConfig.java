@@ -22,8 +22,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 public class AppConfig implements WebMvcConfigurer {
-    @Value("${client.url}")
+    @Value("${service.client.url}")
     private String[] clientUrls;
+    @Value("${token-store.host}")
+    private String tokenStoreHost;
+    @Value("${token-store.port}")
+    private Integer tokenStorePort;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -68,7 +72,7 @@ public class AppConfig implements WebMvcConfigurer {
     // redis 설정
     @Bean
     public RedisConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory();
+        return new LettuceConnectionFactory(tokenStoreHost, tokenStorePort);
     }
 
     @Bean
