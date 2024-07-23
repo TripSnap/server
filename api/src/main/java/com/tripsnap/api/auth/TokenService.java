@@ -3,6 +3,7 @@ package com.tripsnap.api.auth;
 import com.tripsnap.api.auth.redis.RefreshToken;
 import com.tripsnap.api.auth.redis.RefreshTokenRepository;
 import com.tripsnap.api.auth.vo.DecryptedToken;
+import com.tripsnap.api.service.CookieService;
 import com.tripsnap.api.utils.TimeUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.AeadAlgorithm;
@@ -27,6 +28,7 @@ public class TokenService {
     private final SecretKey key = enc.key().build();
 
     private final RefreshTokenRepository refreshTokenRepository;
+    private final CookieService cookieService;
 
     private final int ACCESS_TOKEN_TIME = 60 * 10;
     private final int REFRESH_TOKEN_TIME = 60 * 60 * 24;
@@ -34,9 +36,7 @@ public class TokenService {
     public void setAccessTokenToResponse(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie("access-token", token);
         cookie.setMaxAge(REFRESH_TOKEN_TIME);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-//        cookie.setSecure(true);
+        cookieService.setCookie(cookie);
         response.addCookie(cookie);
     }
 
@@ -45,8 +45,7 @@ public class TokenService {
             Cookie removedCookie = (Cookie) cookie.clone();
             removedCookie.setValue(expireAccessToken());
             removedCookie.setMaxAge(0);
-            removedCookie.setHttpOnly(true);
-            removedCookie.setPath("/");
+            cookieService.setCookie(cookie);
             response.addCookie(removedCookie);
         });
 
