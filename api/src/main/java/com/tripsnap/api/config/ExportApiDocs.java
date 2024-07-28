@@ -50,7 +50,7 @@ public class ExportApiDocs {
         String filepath = new StringBuilder()
                 .append(rootPath)
                 .append(File.separatorChar).append("..")
-                .append(File.separatorChar).append("api-docs")
+                .append(File.separatorChar).append("docs")
                 .append(File.separatorChar).append("src")
                 .append(File.separatorChar).append(filename)
                 .toString();

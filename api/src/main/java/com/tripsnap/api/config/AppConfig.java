@@ -24,9 +24,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class AppConfig implements WebMvcConfigurer {
     @Value("${service.client.url}")
     private String[] clientUrls;
-    @Value("${token-store.host}")
+    @Value("${token-store.host:}")
     private String tokenStoreHost;
-    @Value("${token-store.port}")
+    @Value("${token-store.port:}")
     private Integer tokenStorePort;
 
     @Override
@@ -72,7 +72,9 @@ public class AppConfig implements WebMvcConfigurer {
     // redis 설정
     @Bean
     public RedisConnectionFactory connectionFactory() {
-        return new LettuceConnectionFactory(tokenStoreHost, tokenStorePort);
+        return tokenStorePort==null ?
+                new LettuceConnectionFactory() :
+                new LettuceConnectionFactory(tokenStoreHost, tokenStorePort);
     }
 
     @Bean

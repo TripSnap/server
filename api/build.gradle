@@ -111,6 +111,7 @@ tasks.register('exportApiDocs') {
         systemProperty 'spring.profiles.active', profiles
         systemProperty 'logging.level.root', 'error'
         systemProperty 'spring.jpa.show-sql', false
+        systemProperty 'server.port', 8081
     }
     dependsOn bootRun
 }
