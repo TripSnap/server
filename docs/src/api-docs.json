@@ -158,6 +158,12 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "200": {
             "description": "successful operation",
             "headers": {
@@ -166,9 +172,6 @@
                 "style": "simple"
               }
             }
-          },
-          "400": {
-            "description": "Invalid status value"
           },
           "401": {
             "description": "access token 만료",
@@ -181,9 +184,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -342,6 +342,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -353,9 +356,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -407,6 +407,16 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -419,18 +429,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -443,9 +446,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -497,6 +497,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -508,9 +511,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -582,18 +582,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -606,6 +594,18 @@
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -653,6 +653,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -664,9 +667,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -724,6 +724,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -735,9 +738,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -795,21 +795,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -821,6 +806,21 @@
                       "$ref": "#/components/schemas/SearchMemberDTO"
                     }
                   }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -871,6 +871,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -882,9 +885,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -922,6 +922,25 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "albumId": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -937,6 +956,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -948,16 +970,80 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/album/{album-id}/upload-authority": {
+      "post": {
+        "tags": [
+          "album"
+        ],
+        "summary": "s3에 업로드를 위한 presignedURL 가져옴",
+        "operationId": "photoUploadAuthority",
+        "parameters": [
+          {
+            "name": "album-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPresignedUrlDTO"
+              }
+            }
           },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
+          "required": true
+        },
+        "responses": {
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "200": {
             "description": "successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SimpleSuccessOrNot"
+                  "$ref": "#/components/schemas/PresignedUrlResultDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -1003,6 +1089,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1014,9 +1103,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -1085,18 +1171,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -1109,6 +1183,18 @@
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1168,6 +1254,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1179,9 +1268,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -1237,6 +1323,16 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListAlbumPhotoDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -1249,18 +1345,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListAlbumPhotoDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -1273,9 +1362,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -1321,6 +1407,72 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupAlbumDTO"
+                }
+              }
+            }
+          },
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ]
+      }
+    },
+    "/account/user/photo/upload-authority": {
+      "post": {
+        "tags": [
+          "account"
+        ],
+        "summary": "유저 사진 업로드 presignedUrl 생성",
+        "operationId": "photoUploadAuthority_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPresignedUrlDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -1338,13 +1490,16 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupAlbumDTO"
+                  "$ref": "#/components/schemas/PresignedUrlResultDTO"
                 }
               }
             }
           },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -1357,16 +1512,8 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ]
+        }
       }
     },
     "/account/find": {
@@ -1407,18 +1554,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -1431,42 +1566,6 @@
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
-          }
-        }
-      }
-    },
-    "/account/user": {
-      "get": {
-        "tags": [
-          "account"
-        ],
-        "summary": "회원 정보 가져오기",
-        "operationId": "getUserData",
-        "responses": {
-          "401 ": {
-            "description": "로그인 필요",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Bearer",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MemberDTO"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid status value"
           },
           "401": {
             "description": "access token 만료",
@@ -1479,9 +1578,57 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/account/user": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "회원 정보 가져오기",
+        "operationId": "getUserData",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberDTO"
+                }
+              }
+            }
+          },
+          "401 ": {
+            "description": "로그인 필요",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1522,6 +1669,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1533,9 +1683,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -1588,18 +1735,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -1612,6 +1747,18 @@
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1643,6 +1790,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1654,9 +1804,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         }
       }
@@ -1684,6 +1831,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1695,9 +1845,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -1747,6 +1894,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListNotificationDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -1759,18 +1916,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListNotificationDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -1783,9 +1933,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -1815,6 +1962,9 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid status value"
+          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -1830,8 +1980,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid status value"
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -1844,9 +1994,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -1902,18 +2049,6 @@
           "400": {
             "description": "Invalid status value"
           },
-          "401": {
-            "description": "access token 만료",
-            "headers": {
-              "WWW-Authenticate": {
-                "description": "Refresh-Token",
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "200": {
             "description": "successful operation",
             "content": {
@@ -1926,6 +2061,18 @@
           },
           "403": {
             "description": "권한에 맞지 않는 접근"
+          },
+          "401": {
+            "description": "access token 만료",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Refresh-Token",
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -1969,6 +2116,19 @@
           "400": {
             "description": "Invalid status value"
           },
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupDTO"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -1977,19 +2137,6 @@
                 "style": "simple",
                 "schema": {
                   "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
-          },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GroupDTO"
                 }
               }
             }
@@ -2034,6 +2181,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -2045,9 +2195,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -2097,6 +2244,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -2109,18 +2266,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -2133,9 +2283,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -2179,6 +2326,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -2190,9 +2340,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -2242,6 +2389,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupMemberRequestDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -2254,18 +2411,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListGroupMemberRequestDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -2278,9 +2428,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -2320,6 +2467,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -2332,18 +2489,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -2356,9 +2506,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -2405,6 +2552,16 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
+                }
+              }
+            }
+          },
           "401 ": {
             "description": "로그인 필요",
             "headers": {
@@ -2417,18 +2574,11 @@
               }
             }
           },
-          "200": {
-            "description": "successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SimpleWithPageDataListMemberDTO"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid status value"
+          },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
           },
           "401": {
             "description": "access token 만료",
@@ -2441,9 +2591,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           }
         },
         "security": [
@@ -2476,6 +2623,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -2487,9 +2637,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -2543,6 +2690,9 @@
           "400": {
             "description": "Invalid status value"
           },
+          "403": {
+            "description": "권한에 맞지 않는 접근"
+          },
           "401": {
             "description": "access token 만료",
             "headers": {
@@ -2554,9 +2704,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "권한에 맞지 않는 접근"
           },
           "200": {
             "description": "successful operation",
@@ -2574,6 +2721,85 @@
             "access-token": []
           }
         ]
+      }
+    },
+    "/test": {
+      "get": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_3",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_2",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_5",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_6",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_1",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "test-controller"
+        ],
+        "operationId": "test_4",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     }
   },
@@ -2721,17 +2947,6 @@
           }
         }
       },
-      "AlbumPhotoInsDTO": {
-        "required": [
-          "photo"
-        ],
-        "type": "object",
-        "properties": {
-          "photo": {
-            "type": "string"
-          }
-        }
-      },
       "GroupAlbumInsDTO": {
         "required": [
           "address"
@@ -2749,13 +2964,17 @@
           },
           "latitude": {
             "maximum": 90.0,
+            "exclusiveMaximum": false,
             "minimum": -90.0,
+            "exclusiveMinimum": false,
             "type": "number",
             "format": "double"
           },
           "longitude": {
             "maximum": 180.0,
+            "exclusiveMaximum": false,
             "minimum": -180.0,
+            "exclusiveMinimum": false,
             "type": "number",
             "format": "double"
           },
@@ -2763,14 +2982,29 @@
             "maxLength": 100.0,
             "minLength": 0.0,
             "type": "string"
+          }
+        }
+      },
+      "RequestPresignedUrlDTO": {
+        "required": [
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "pattern": "^image/(jpeg|png)$",
+            "type": "string"
+          }
+        }
+      },
+      "PresignedUrlResultDTO": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string"
           },
-          "albumPhotoList": {
-            "maxItems": 50.0,
-            "minItems": 0.0,
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AlbumPhotoInsDTO"
-            }
+          "filename": {
+            "type": "string"
           }
         }
       },
@@ -2786,6 +3020,17 @@
             "minimum": 1.0,
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "AlbumPhotoInsDTO": {
+        "required": [
+          "photo"
+        ],
+        "type": "object",
+        "properties": {
+          "photo": {
+            "type": "string"
           }
         }
       },
